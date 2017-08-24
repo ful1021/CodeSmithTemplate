@@ -1,0 +1,7 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+
+<%--<%@ Property Name="UseListCache" Type="System.Boolean" Category="03.生成配置" Default="false" Description="是否缓存列表数据" %>--%>
+<%@ Property Name="IsUserCache" Type="System.Boolean" Category="03.生成配置" Description="服务是否使用缓存" Default="true" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>

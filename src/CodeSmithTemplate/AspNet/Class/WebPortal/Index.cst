@@ -1,0 +1,129 @@
+﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Property Name="NamespaceName" Type="System.String" Category="01.数据源" Description="命名空间名称" Default="P:Boss.Scm.Wms.Inventories.Dto" %>
+<%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="表名称" Default="InventoryCargoOwner" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Assembly Src="../../../CSComment.cs" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%
+var queryDtoColunms = AnalyticGetColumns(NamespaceName, EntityName+"Dto");
+var getAllInputColunms = AnalyticGetColumns(NamespaceName, EntityName+"GetAllInput");
+var createOrUpdateInputColunms = AnalyticGetColumns(NamespaceName, EntityName+"CreateOrUpdateInput");
+%>
+<template>
+    <div class="content">
+        <el-form class="search-box" label-width="60px">
+            <el-row :gutter="10">
+                <el-col :span="4" :xs="24" class="pull-right">
+                    <el-form-item label-width="0px">
+                        <el-button size="small" type="primary" icon="search" @click="queryList">查询</el-button>
+                    </el-form-item>
+                </el-col>
+                <%foreach(var col in getAllInputColunms){ %>
+				<el-col :span="5" :xs="24">
+                    <el-form-item label="<%=col.Value %>">
+                        <el-input size="small" v-model="searchInfo.<%=col.Key %>" @keyup.native.enter="filters.<%=col.Key %> = searchInfo.<%=col.Key %>" @change.native="filters.<%=col.Key %> = searchInfo.<%=col.Key %>" placeholder="商品编码"></el-input>
+                    </el-form-item>
+                </el-col>
+                <%} %>
+            </el-row>
+        </el-form>
+        <el-row class="division-border">
+            <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:StorageCenter-CargoOwnerManagement-Create>新增</el-button>
+        </el-row>
+        <el-row class="division-border">
+            <div class="table-wrap-box">
+                <el-table stripe ref="listTable" :data="tableData" border style="width: 100%" @row-click="handleRowClick" @select-all="handleSelectAll"
+                    :row-class-name="rowClassName">
+                    <el-table-column align="center" type="selection" width="50"></el-table-column>
+                    <%foreach(var col in queryDtoColunms) {%>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>"></el-table-column>
+                    <%} %>
+                    <el-table-column header-align="center" label="创建时间" prop="creationTime">
+                        <template scope="scope">
+                            <span>{{scope.row.creationTime | dateFormat('yyyy-MM-dd hh:mm:ss')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column header-align="center" label="创建人" prop="creatorUserId">
+                        <template scope="scope">
+                            <user-name :userId="scope.row.creatorUserId"></user-name>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pagination.currentPage"
+                :page-sizes="[10, 25, 50,100]" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total">
+            </el-pagination>
+        </el-row>
+        <el-dialog title="新增/编辑" :visible.sync="createOrUpdateModelDialog" :show-close="true" @close="createOrUpdateModelDialogCloseCallback">
+            <div class="form-wrap-box">
+                <el-form label-position="left" :model="createOrUpdateModel" ref="cargoOwnerForm" label-width="100px">
+                    <%foreach(var col in createOrUpdateInputColunms) {%>
+                    <el-form-item prop="<%=col.Key %>" label="<%=col.Value %>" :rules="{ required: true, message: '请输入<%=col.Value %>', trigger: 'blur' }">
+                        <el-input v-model="createOrUpdateModel.<%=col.Key %>" :disabled="createOrUpdateModel.id>0"></el-input>
+                    </el-form-item>
+                    <%} %>
+                </el-form>
+                <span slot="footer" style="float:right;">
+                    <el-button @click="createOrUpdateModelDialogCloseCallback">取 消</el-button>
+                    <el-button type="primary" @click="cargoOwnerFormSaveBtnHandler">保 存</el-button>
+                </span>
+            </div>
+        </el-dialog>
+    </div>
+</template>
+<script>
+    export default {
+        data() {
+            return {
+                filters: {
+                    filter: "",
+                    <%foreach(var col in getAllInputColunms){ %>
+                    <%=col.Key %>:"",
+                    <%} %>
+                },
+                searchInfo: {
+                    filter: "",
+                    <%foreach(var col in getAllInputColunms){ %>
+                    <%=col.Key %>:"",
+                    <%} %>
+                },
+                createOrUpdateModelDialog: false,
+                createOrUpdateModel: {
+                    <%foreach(var col in createOrUpdateInputColunms){ %>
+                    <%=col.Key %>:"",
+                    <%} %>
+                }
+            };
+        },
+        mounted() {
+            this.queryList();
+        },
+        methods: {
+            queryList() {
+                const _this = this;
+                return site.api.services.app.<%=ToFirstLetterCamel(EntityName) %>Mgmt.getAll(this.filters, {
+                    isShowLoading: false,
+                    success(data) {
+                        _this.tableData = data.items;
+                        _this.pagination.total = data.totalCount;
+                        _this.refreshSelectRows();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<style lang="less" rel="stylesheet/less" type="text/css" scoped>
+    .content {
+        padding-bottom: 20px;
+        .table-wrap-box {
+            padding: 10px;
+        }
+        .form-wrap-box {
+            width: 98%;
+            padding: 5%;
+        }
+    }
+</style>

@@ -1,0 +1,50 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="01.输入输出数据源" Description="生成代码所设计的数据表" %>
+<%@ Register Template="../Helper/CommConfigProperty.cst" Name="CommConfigProperty" MergeProperties="True" %>  
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%
+var pk = GetPKName(SourceTable);
+var pktype = GetPKCSharpType(SourceTable);
+var dbName = SourceTable.Database.Name;
+%>
+using Abp.Application.Services;
+using Abp.Application.Services.Dto;
+using Abp.Domain.Repositories;
+using Boss.Application.Dtos;
+using Boss.Domain.Entities;
+using Boss.Domain.Repositories;
+using Comm.Config;
+using Comm.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Dapper;
+using Abp.Runtime.Caching;
+
+namespace Boss.Application
+{
+    /// <summary>
+    /// <%=SourceTable.Description %>  服务实现
+    /// </summary>
+    public partial class <%=SourceTable.Name %>AppService : <%
+    if(IsUserCache){
+    %>CacheCrudAsyncAppService<<%=SourceTable.Name %><%
+    }else{
+    %>BossCrudAsyncAppService<<%=SourceTable.Name %><% 
+    }
+    %>, <%=SourceTable.Name %>MapTo, <%=SourceTable.Name %>QueryDto, <%=pktype %>, <%=SourceTable.Name %>GetAllInput, <%=SourceTable.Name %>CreateInput, <%=SourceTable.Name %>UpdateInput, <%=SourceTable.Name %>GetInput, <%=SourceTable.Name %>DeleteInput>, I<%=SourceTable.Name %>AppService
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="repository"></param><%if(IsUserCache){ %>
+        /// <param name="cacheManager"></param><%} %>
+        public <%=SourceTable.Name %>AppService(IBossRepository<<%=SourceTable.Name %>, <%=pktype %>> repository<%if(IsUserCache){
+            %>, ICacheManager cacheManager<%} %>) : base("<%=pk %>", repository, <%=SourceTable.Name %>MapTo.GetInstance()<%if(IsUserCache){%>, cacheManager<%} %>)
+        {
+        }        
+    }
+}

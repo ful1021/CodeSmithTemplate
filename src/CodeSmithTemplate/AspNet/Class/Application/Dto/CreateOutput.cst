@@ -1,0 +1,28 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../../Helper/CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="01.操作表" Description="生成代码所设计的数据表" %>
+<%--<%@ Register Template="../Helper/MethodProperty.cst" Name="MenthodProperty" MergeProperties="True" %>  --%>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+
+<%
+var pk = GetPKName(SourceTable);
+var pktype = GetPKCSharpType(SourceTable);
+string skipColumns = "IsValid|SysbrandID|CreateDate|CreateLoginId|UpdateDate|UpdateUserId";
+string skipAuditColumns = "AuditState|Why|AuditPerson|AuditTime";
+%>
+using Abp.Application.Services.Dto;
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace Boss.Application.Dtos
+{
+    /// <summary>
+    /// <%=GetTableDescription(SourceTable) %>  新增 输出参数
+    /// </summary>
+    public class <%=GetTableSplitName(SourceTable) %>CreateOutput : EntityDto<<%=pktype %>>
+    {
+    }
+}
