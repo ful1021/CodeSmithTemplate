@@ -13,7 +13,7 @@ using SchemaExplorer;
 namespace CodeSmithTemplate
 {
     /// <summary>
-    /// 公共代码帮助类  由于CodeSmith 不支持多个类继承，因此只有所有代码都卸载这一个类中，继承CodeTemplate
+    /// 公共代码帮助类  由于CodeSmith 不支持多个类继承，因此只有所有代码都写在这一个类中，继承CodeTemplate
     /// </summary>
     public class CommonCode : CodeTemplate
     {

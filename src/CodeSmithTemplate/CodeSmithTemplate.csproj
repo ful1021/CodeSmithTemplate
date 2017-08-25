@@ -57,7 +57,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="AspNet\DllFile\Helper\DllFileProperty.inc" />
-    <None Include="AspNet\DllFile\VueSpaWeb\Index.cst" />
+    <None Include="AspNet\DllFile\Abp.VueSpaWeb\Index.cst" />
     <None Include="AspNet\DllFile\Helper\DllFileProperty.cst" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
