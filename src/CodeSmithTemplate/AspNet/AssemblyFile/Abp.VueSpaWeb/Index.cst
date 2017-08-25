@@ -1,11 +1,11 @@
 ﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
-<%@ Register Template="../Helper/DllFileProperty.cst" Name="DllFileProperty" MergeProperties="True" %>  
+<%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
 <%@ Assembly Src="../Helper/CSComment.cs" %>
-<%@ Import Namespace="CodeSmithTemplate" %>
-<!-- #include file="../Helper/DllFileProperty.inc" -->
+<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<!-- #include file="../Helper/AssemblyFileProperty.inc" -->
 <%
 var queryDtoColunms = AnalyticGetColumns(DocXmlFile, NamespaceName, EntityName+"Dto");
 var getAllInputColunms = AnalyticGetColumns(DocXmlFile, NamespaceName, EntityName+"GetAllInput");

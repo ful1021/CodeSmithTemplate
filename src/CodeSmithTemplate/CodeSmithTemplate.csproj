@@ -51,14 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonCode.cs" />
-    <Compile Include="AspNet\DllFile\Helper\CSComment.cs" />
+    <Compile Include="AspNet\AssemblyFile\Helper\CSComment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="AspNet\DllFile\Helper\DllFileProperty.inc" />
-    <None Include="AspNet\DllFile\Abp.VueSpaWeb\Index.cst" />
-    <None Include="AspNet\DllFile\Helper\DllFileProperty.cst" />
+    <Content Include="AspNet\AssemblyFile\Helper\AssemblyFileProperty.inc" />
+    <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\Index.cst" />
+    <None Include="AspNet\AssemblyFile\Helper\AssemblyFileProperty.cst" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
