@@ -51,25 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonCode.cs" />
-    <Compile Include="CSComment.cs" />
+    <Compile Include="AspNet\DllFile\Helper\CSComment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="AspNet\Class\Core\" />
-    <Folder Include="AspNet\Class\Web\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AspNet\Class\Application\AsyncAppService.cst" />
-    <None Include="AspNet\Class\Application\Dto\CreateInput.cst" />
-    <None Include="AspNet\Class\Application\Dto\CreateOutput.cst" />
-    <None Include="AspNet\Class\Application\Dto\GetAllInput.cst" />
-    <None Include="AspNet\Class\Application\Dto\GetAllOutput.cst" />
-    <None Include="AspNet\Class\Application\Dto\QueryDto.cst" />
-    <None Include="AspNet\Class\Application\Dto\UpdateInput.cst" />
-    <None Include="AspNet\Class\Application\Dto\UpdateOutput.cst" />
-    <None Include="AspNet\Class\Application\IAsyncAppService.cst" />
-    <None Include="AspNet\Class\Helper\CommConfigProperty.cst" />
-    <None Include="AspNet\Class\WebPortal\Index.cst" />
+    <Content Include="AspNet\DllFile\Helper\DllFileProperty.inc" />
+    <None Include="AspNet\DllFile\VueSpaWeb\Index.cst" />
+    <None Include="AspNet\DllFile\Helper\DllFileProperty.cst" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

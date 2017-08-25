@@ -7,11 +7,6 @@ using System.Xml.Serialization;
 
 namespace CodeSmithTemplate
 {
-    public enum CSCommentType
-    {
-        P = 0
-    }
-
     /// <remarks/>
     [SerializableAttribute()]
     [XmlTypeAttribute(AnonymousType = true)]

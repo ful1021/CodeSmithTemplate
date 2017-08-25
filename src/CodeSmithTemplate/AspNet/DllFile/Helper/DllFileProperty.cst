@@ -1,0 +1,12 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+
+<%@ Property Name="DocXmlFile" Type="System.String" Category="01.数据源" Editor="System.Windows.Forms.Design.FileNameEditor" EditorBase="System.Drawing.Design.UITypeEditor" Description="基于Dll文件的xml文档路径" Default="F:\Work\code\JK724\JK724.Scm\src\Boss.Scm.VipApiHost\bin\Boss.Scm.Application.xml" %>
+
+<%@ Property Name="DllFile" Type="System.String" Category="01.数据源" Editor="System.Windows.Forms.Design.FileNameEditor" EditorBase="System.Drawing.Design.UITypeEditor" Description="基于Dll文件的dll路径" Default="F:\Work\code\JK724\JK724.Scm\src\Boss.Scm.VipApiHost\bin\Boss.Scm.Application.dll" %>
+
+<%@ Property Name="NamespaceName" Type="System.String" Category="01.数据源" Description="命名空间名称" Default="P:Boss.Scm.Wms.Inventories.Dto" %>
+<%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="实体名称" Default="InventoryCargoOwner" %>
+<%@ Property Name="PermissionModuleName" Type="System.String" Category="01.数据源" Description="权限模块名称" Default="StorageCenter" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>

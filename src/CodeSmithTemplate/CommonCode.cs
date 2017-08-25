@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms.Design;
-using System.Xml.Serialization;
 using CodeSmith.Engine;
 using SchemaExplorer;
 
@@ -16,7 +15,7 @@ namespace CodeSmithTemplate
     /// <summary>
     /// 公共代码帮助类  由于CodeSmith 不支持多个类继承，因此只有所有代码都卸载这一个类中，继承CodeTemplate
     /// </summary>
-    public abstract class CommonCode : CodeTemplate
+    public class CommonCode : CodeTemplate
     {
         #region 设置公共属性
 
@@ -29,7 +28,7 @@ namespace CodeSmithTemplate
         [Optional]
         [NotChecked]
         [Category("01.输出目录")]
-        [Description("加载的文件的根目录")]
+        [Description("输出文件的根目录")]
         [DefaultValue("")]
         public string OutputDirectory
         {
@@ -45,20 +44,6 @@ namespace CodeSmithTemplate
                     _outputDirectory += "\\";
                 }
             }
-        }
-
-        private string _docXmlFile = @"F:\Work\code\JK724\JK724.Scm\src\Boss.Scm.VipApiHost\bin\Boss.Scm.Application.xml";
-
-        [Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
-        [Optional]
-        [NotChecked]
-        [Category("01.数据源")]
-        [Description("存放输出代码的根目录")]
-        [DefaultValue("")]
-        public string DocXmlFile
-        {
-            get { return _docXmlFile; }
-            set { _docXmlFile = value; }
         }
 
         private string _creator = "付亮";
@@ -140,7 +125,7 @@ namespace CodeSmithTemplate
         }
 
         /// <summary>
-        /// 判断列是否自增
+        /// 是否为标识符，不支持Access
         /// </summary>
         /// <param name="col"></param>
         /// <returns></returns>
@@ -150,53 +135,6 @@ namespace CodeSmithTemplate
         }
 
         #endregion 处理列
-
-        #region 基础方法
-        /// <summary>
-        /// 反序列化  T 类型标注为 [Serializable]    最好指定下  [XmlRoot("xml")]
-        /// </summary>        
-        /// <param name="className"></param>
-        /// <param name="namespaceName"></param>
-        /// <param name="isFirstLetterCamel"></param>
-        /// <returns></returns>
-        public Dictionary<string, string> AnalyticGetColumns(string namespaceName, string className, bool isFirstLetterCamel = true)
-        {
-            string prefix = namespaceName + "." + className;
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            CSComment doc = LoadDocXmlFile();
-            if (doc == null)
-            {
-                return dict;
-            }
-            var list = doc.members.Where(a => a.name.StartsWith(prefix)).ToList();
-            foreach (var item in list)
-            {
-                var name = item.name.Substring(prefix.Length + 1);
-                var text = item.Items.FirstOrDefault().ToString().Trim();
-                if (isFirstLetterCamel)
-                {
-                    name = ToFirstLetterCamel(name);
-                }
-                dict[name] = text;
-            }
-            return dict;
-        }
-
-        private CSComment LoadDocXmlFile()
-        {
-            if (string.IsNullOrWhiteSpace(DocXmlFile))
-            {
-                return null;
-            }
-            var xml = File.ReadAllText(DocXmlFile);
-            CSComment doc = null;
-            using (StringReader sr = new StringReader(xml))
-            {
-                XmlSerializer xmldes = new XmlSerializer(typeof(CSComment));
-                doc = xmldes.Deserialize(sr) as CSComment;
-            }
-            return doc;
-        }
 
         #region 处理Table
 
@@ -218,7 +156,15 @@ namespace CodeSmithTemplate
             }
             return sb.ToString();
         }
-
+        /// <summary>
+        /// 得到表注释
+        /// </summary>
+        /// <param name="SourceTable"></param>
+        /// <returns></returns>
+        public string GetTableDescription(TableSchema SourceTable)
+        {
+            return SourceTable.Description;
+        }
         #endregion 处理Table
 
         #region 处理主键
@@ -799,7 +745,5 @@ namespace CodeSmithTemplate
         }
 
         #endregion 生成文件
-
-        #endregion 基础方法
     }
 }
