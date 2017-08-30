@@ -50,8 +50,13 @@
     <Reference Include="TaskDialog, Version=1.0.4533.35818, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSComment.cs" />
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSCommentException.cs" />
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSCommentParam.cs" />
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSCommentParamCollection.cs" />
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSCommentReader.cs" />
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSCommentXMLCache.cs" />
     <Compile Include="CommonCode.cs" />
-    <Compile Include="AspNet\AssemblyFile\Helper\CSComment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

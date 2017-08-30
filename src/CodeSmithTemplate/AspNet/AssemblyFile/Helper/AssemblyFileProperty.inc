@@ -1,19 +1,30 @@
 ﻿<script runat="template">
-public System.Collections.Generic.Dictionary<string, string> AnalyticGetColumns(string docXmlFile, string namespaceName, string className, bool isFirstLetterCamel = true)
+public static System.Collections.Generic.Dictionary<System.String, System.String> AnalyticGetColumns(string dllFile, string className, bool isFirstLetterCamel = true)
 {
-    string prefix = namespaceName + "." + className;
-    System.Collections.Generic.Dictionary<string, string>
-        dict = new System.Collections.Generic.Dictionary<string, string>();
-    CSComment doc = LoadDocXmlFile(docXmlFile);
-    if (doc == null)
+    var props = GetProperties(dllFile, className);
+    System.Collections.Generic.Dictionary<System.String, System.String>
+dict = new System.Collections.Generic.Dictionary<System.String, System.String>();
+    foreach (var item in props)
     {
-        return dict;
-    }
-    var list = doc.members.Where(a => a.name.StartsWith(prefix)).ToList();
-    foreach (var item in list)
-    {
-        var name = item.name.Substring(prefix.Length + 1);
-        var text = item.Items.FirstOrDefault().ToString().Trim();
+        var name = item.Name;
+        var textInfo = blqw.Reflection.CSCommentReader.Create(item);
+        var text = textInfo != null ? textInfo.Summary : "";
+        if (name == "CreationTime")
+        {
+            text = "创建时间";
+        }
+        else if (name == "CreatorUserId")
+        {
+            text = "创建人";
+        }
+        else if (name == "LastModificationTime")
+        {
+            text = "上次修改时间";
+        }
+        else if (name == "LastModifierUserId")
+        {
+            text = "上次修改人";
+        }
         if (isFirstLetterCamel)
         {
             name = ToFirstLetterCamel(name);
@@ -21,21 +32,5 @@ public System.Collections.Generic.Dictionary<string, string> AnalyticGetColumns(
         dict[name] = text;
     }
     return dict;
-}
-
-private CSComment LoadDocXmlFile(string docXmlFile)
-{
-    if (string.IsNullOrWhiteSpace(docXmlFile))
-    {
-        return null;
-    }
-    var xml = System.IO.File.ReadAllText(docXmlFile);
-    CSComment doc = null;
-    using (System.IO.StringReader sr = new System.IO.StringReader(xml))
-    {
-        System.Xml.Serialization.XmlSerializer xmldes = new System.Xml.Serialization.XmlSerializer(typeof(CSComment));
-        doc = xmldes.Deserialize(sr) as CSComment;
-    }
-    return doc;
 }
 </script>

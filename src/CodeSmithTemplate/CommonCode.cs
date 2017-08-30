@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing.Design;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms.Design;
 using CodeSmith.Engine;
@@ -745,5 +746,35 @@ namespace CodeSmithTemplate
         }
 
         #endregion 生成文件
+
+        /// <summary>
+        /// 根据dll文件，和类名反射获取PropertyInfo集合
+        /// </summary>
+        /// <param name="dllFile"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public static PropertyInfo[] GetProperties(string dllFile, string className)
+        {
+            Assembly assembly = Assembly.LoadFrom(dllFile);
+            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
+            if (type == null)
+            {
+                return new PropertyInfo[0];
+            }
+            PropertyInfo[] propertyinfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            return propertyinfo;
+        }
+
+        /// <summary>
+        /// 判断item是否存在list中
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static bool IsIn<T>(T item, params T[] list)
+        {
+            return list.Contains(item);
+        }
     }
 }

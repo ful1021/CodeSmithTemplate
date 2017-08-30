@@ -3,14 +3,21 @@
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
-<%@ Assembly Src="../Helper/CSComment.cs" %>
-<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Assembly Src="../blqw.CSComment/CSComment.cs" %>
+<%@ Assembly Src="../blqw.CSComment/CSCommentException.cs" %>
+<%@ Assembly Src="../blqw.CSComment/CSCommentParam.cs" %>
+<%@ Assembly Src="../blqw.CSComment/CSCommentParamCollection.cs" %>
+<%@ Assembly Src="../blqw.CSComment/CSCommentReader.cs" %>
+<%@ Assembly Src="../blqw.CSComment/CSCommentXMLCache.cs" %>
+<%@ Import Namespace="blqw.Reflection" %>
+<%@ Import Namespace="System.Collections.Generic" %>
 <!-- #include file="../Helper/AssemblyFileProperty.inc" -->
 <%
-var queryDtoColunms = AnalyticGetColumns(DocXmlFile, NamespaceName, EntityName+"Dto");
-var getAllInputColunms = AnalyticGetColumns(DocXmlFile, NamespaceName, EntityName+"GetAllInput");
-var createOrUpdateInputColunms = AnalyticGetColumns(DocXmlFile, NamespaceName, EntityName+"CreateOrUpdateInput");
+Dictionary<string, string> queryDtoColunms = AnalyticGetColumns(DllFile, EntityName+"QueryDto");
+Dictionary<string, string> getAllInputColunms = AnalyticGetColumns(DllFile, EntityName+"GetAllInput");
+Dictionary<string, string> createOrUpdateInputColunms = AnalyticGetColumns(DllFile, EntityName+"CreateOrUpdateInput");
 var appServiceName = ToFirstLetterCamel(EntityName)+"Mgmt";
+var excelControllerName = "Wms/" + EntityName;
 var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
 %>
 <template>
@@ -23,6 +30,7 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
                     </el-form-item>
                 </el-col>
                 <%foreach(var col in getAllInputColunms){ %>
+                <%if(IsIn(col.Key.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
 				<el-col :span="5" :xs="24">
                     <el-form-item label="<%=col.Value %>">
                         <el-input size="small" v-model="searchInfo.<%=col.Key %>" @keyup.native.enter="filters.<%=col.Key %> = searchInfo.<%=col.Key %>" @change.native="filters.<%=col.Key %> = searchInfo.<%=col.Key %>" placeholder="<%=col.Value %>"></el-input>
@@ -45,18 +53,23 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
                         </template>
                     </el-table-column>
                     <%foreach(var col in queryDtoColunms) {%>
+                    <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
+                    <%if(IsIn(col.Key.ToLower(), "creationtime","lastmodificationtime")){ %>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>">
+                        <template scope="scope">
+                            <span>{{scope.row.<%=col.Key %> | dateFormat('yyyy-MM-dd hh:mm:ss')}}</span>
+                        </template>
+                    </el-table-column>
+                    <% continue;} %>
+                    <%if(IsIn(col.Key.ToLower(), "creatoruserid","lastmodifieruserid")){ %>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>">
+                        <template scope="scope">
+                            <user-name :userId="scope.row.<%=col.Key %>"></user-name>
+                        </template>
+                    </el-table-column>
+                    <% continue;} %>
                     <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>"></el-table-column>
                     <%} %>
-                    <el-table-column header-align="center" label="创建时间" prop="creationTime">
-                        <template scope="scope">
-                            <span>{{scope.row.creationTime | dateFormat('yyyy-MM-dd hh:mm:ss')}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column header-align="center" label="创建人" prop="creatorUserId">
-                        <template scope="scope">
-                            <user-name :userId="scope.row.creatorUserId"></user-name>
-                        </template>
-                    </el-table-column>
                 </el-table>
             </div>
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pagination.currentPage"
@@ -68,6 +81,7 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
             <div class="form-wrap-box">
                 <el-form label-position="left" :model="createOrUpdateModel" ref="createOrUpdateFormForm" label-width="100px">
                     <%foreach(var col in createOrUpdateInputColunms) {%>
+                    <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
                     <el-form-item prop="<%=col.Key %>" label="<%=col.Value %>" :rules="{ required: true, message: '请输入<%=col.Value %>', trigger: 'blur' }">
                         <el-input v-model="createOrUpdateModel.<%=col.Key %>"></el-input>
                     </el-form-item>
@@ -82,92 +96,80 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
     </div>
 </template>
 <script>
+	let resetCreateForm = {		
+        <%foreach(var col in createOrUpdateInputColunms){ %>
+        <%=col.Key %>:"",
+        <%} %>
+	};
+	let initFilters = {
+        <%foreach(var col in getAllInputColunms){ %>
+        <%if(IsIn(col.Key.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
+        <%=col.Key %>:"",
+        <%} %>
+	};
+	let appService = site.api.services.app.<%=appServiceName %>;
     export default {
-        data() {
-            return {
-                filters: {
-                    filter: "",
-                    <%foreach(var col in getAllInputColunms){ %>
-                    <%=col.Key %>:"",
-                    <%} %>
-                },
-                searchInfo: {
-                    filter: "",
-                    <%foreach(var col in getAllInputColunms){ %>
-                    <%=col.Key %>:"",
-                    <%} %>
-                },
-                createOrUpdateModelDialog: false,
-                createOrUpdateModel: {
-                    id:"",
-                    <%foreach(var col in createOrUpdateInputColunms){ %>
-                    <%=col.Key %>:"",
-                    <%} %>
-                }
-            };
-        },
-        mounted() {
-            this.queryList();
-        },
+		data() {
+			return {
+				filters: initFilters,
+				searchInfo: initFilters,
+				createOrUpdateModelDialog: false,
+				createOrUpdateModel: resetCreateForm,
+				uploadAction: site.Config.webapiDomain + '<%=excelControllerName %>/ImportExcel'
+			};
+		},
         methods: {
-            queryList() {
-                const _this = this;
-                return site.api.services.app.<%=appServiceName %>.getAll(this.filters, {
-                    isShowLoading: false,
-                    success(data) {
-                        _this.tableData = data.items;
-                        _this.pagination.total = data.totalCount;
-                        _this.refreshSelectRows();
-                    }
-                });
-            },
-            //新增弹框关闭事件
-            createOrUpdateModelDialogCloseCallback() {
-                this.createOrUpdateModel = {};
-                this.$refs['createOrUpdateFormForm'].resetFields();
-                this.createOrUpdateModelDialog = false;
-            },
-            //新增或者修改保存事件
-            createOrUpdateFormSaveBtnHandler() {
-                const _this = this;
-                this.$refs["createOrUpdateFormForm"].validate(function (valid) {
-                    if (valid) {
-                        let input_data = Object.assign({}, _this.createOrUpdateModel);
-                        site.api.services.app.<%=appServiceName %>.createOrUpdate(input_data, { isShowLoading: true }).then((result) => {
-                            _this.createOrUpdateModelDialog = false;
-                            _this.$refs['createOrUpdateFormForm'].resetFields();
-                            _this.createOrUpdateModel = {};
-                            _this.$toastr.success('操作成功!');
-                            _this.queryList();
-                        });
-
-                    }
-                });
-            },
+			init() {
+				this.queryList();
+			},
+			queryList() {
+				this.getAll(appService);
+			},
+            
+            
+			//新增弹框关闭事件
+			createOrUpdateModelDialogCloseCallback() {
+				this.fromModelDialogCloseCallback(() => {
+					this.createOrUpdateModel = resetCreateForm;
+					this.createOrUpdateModelDialog = false;
+				});
+			},
+			//新增或者修改保存事件
+			createOrUpdateFormSaveBtnHandler() {
+				this.formSaveBtnHandler(appService, this.createOrUpdateModel, result => {
+					this.createOrUpdateModel = resetCreateForm;
+					this.createOrUpdateModelDialog = false;
+				});
+			},
             editFormBtnHandler(id) {
                 if (id <= 0) {
                     this.$toastr.warning('无法获取Id');
                 }
-
                 this.createOrUpdateModelDialog = true;
-
-                site.api.services.app.<%=appServiceName %>.get({ id: id }).then((result) => {
+                appService.get({ id: id }).then((result) => {
                     this.createOrUpdateModel = result;
                 });
-
-            }
+            },
+            
+			//导入  
+			downloadImporTemplate() {
+				site.utils.downloadFileIframe('<%=excelControllerName %>/DownloadImporTemplate');
+			},
+			beforeUploadExcel(file) {
+				this.uploadFileSetting.loading = true;
+			},
+			onUploadExcelSuccess(response, file, fileList) {
+				this.onUploadFileSuccess(appService, response);
+			},
+			onUploadExcelError(err, file, fileList) {
+				this.onUploadFileError(err);
+			},
+            
+            //导出
+			exportExcel() {
+				site.utils.downloadFileIframe('<%=excelControllerName %>/ExportExcel?' + site.utils.json2get(this.filters));
+			}
+            
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" type="text/css" scoped>
-    .content {
-        padding-bottom: 20px;
-        .table-wrap-box {
-            padding: 10px;
-        }
-        .form-wrap-box {
-            width: 98%;
-            padding: 5%;
-        }
-    }
-</style>
