@@ -3,22 +3,19 @@
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
+<%@ Assembly Src="../../../ClassNames.cs" %>
 <%@ Assembly Src="../blqw.CSComment/CSComment.cs" %>
-<%@ Assembly Src="../blqw.CSComment/CSCommentException.cs" %>
-<%@ Assembly Src="../blqw.CSComment/CSCommentParam.cs" %>
-<%@ Assembly Src="../blqw.CSComment/CSCommentParamCollection.cs" %>
-<%@ Assembly Src="../blqw.CSComment/CSCommentReader.cs" %>
-<%@ Assembly Src="../blqw.CSComment/CSCommentXMLCache.cs" %>
 <%@ Import Namespace="blqw.Reflection" %>
+<%@ Assembly Src="../AssemblyFileHelper.cs" %>
+<%@ Import Namespace="CodeSmithTemplate" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
-<!-- #include file="../Helper/AssemblyFileProperty.inc" -->
 <%
-Dictionary<string, string> queryDtoColunms = AnalyticGetColumns(DllFile, EntityName+"QueryDto");
-Dictionary<string, string> getAllInputColunms = AnalyticGetColumns(DllFile, EntityName+"GetAllInput");
-Dictionary<string, string> createOrUpdateInputColunms = AnalyticGetColumns(DllFile, EntityName+"CreateOrUpdateInput");
-var appServiceName = ToFirstLetterCamel(EntityName)+"Mgmt";
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+Dictionary<string, string> queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
+Dictionary<string, string> getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
+Dictionary<string, string> createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.QueryDtoName);
 var excelControllerName = "Wms/" + EntityName;
-var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
 %>
 <template>
     <div class="content">
@@ -40,7 +37,7 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
             </el-row>
         </el-form>
         <el-row class="division-border">
-            <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:<%=permissionPrefix %>-Create>新增</el-button>
+            <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:<%=names.PermissionPrefix %>-Create>新增</el-button>
         </el-row>
         <el-row class="division-border">
             <div class="table-wrap-box">
@@ -49,7 +46,7 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
                     <el-table-column align="center" type="selection" width="50"></el-table-column>
                     <el-table-column align="center" width="100" label="操作">
                         <template scope="scope">
-                            <el-button type="text" @click.stop.prevent="editFormBtnHandler(scope.row.id)" v-permission:<%=permissionPrefix %>-Edit>修改</el-button>
+                            <el-button type="text" @click.stop.prevent="editFormBtnHandler(scope.row.id)" v-permission:<%=names.PermissionPrefix %>-Edit>修改</el-button>
                         </template>
                     </el-table-column>
                     <%foreach(var col in queryDtoColunms) {%>
@@ -107,7 +104,7 @@ var permissionPrefix = PermissionModuleName+"-"+EntityName+"Management";
         <%=col.Key %>:"",
         <%} %>
 	};
-	let appService = site.api.services.app.<%=appServiceName %>;
+	let appService = site.api.services.app.<%=ToFirstLetterCamel(names.AppServiceName) %>;
     export default {
 		data() {
 			return {

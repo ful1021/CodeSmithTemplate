@@ -1,0 +1,50 @@
+﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Assembly Src="../../../ClassNames.cs" %>
+<%@ Assembly Src="../blqw.CSComment/CSComment.cs" %>
+<%@ Import Namespace="blqw.Reflection" %>
+<%@ Assembly Src="../AssemblyFileHelper.cs" %>
+<%@ Import Namespace="CodeSmithTemplate" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+var pk = "Id";
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
+%>
+using System;
+using System.Linq;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
+using <%=assType.Namespace %>.Dto;
+
+namespace <%=assType.Namespace %>
+{
+    /// <summary>
+    /// <%=AssemblyFileHelper.GetClassSummary(names.CoreDllFile, EntityName) %>  服务实现
+    /// </summary>
+    public partial class <%=names.AppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>, I<%=names.AppServiceName %>
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="repository"></param>
+        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> repository) : base("<%=pk %>", repository)
+        {
+            GetAllPermissionName = <%=names.PermissionPrefix %>;
+            CreatePermissionName = <%=names.PermissionPrefix %>Create;
+            UpdatePermissionName = <%=names.PermissionPrefix %>Edit;
+            DeletePermissionName = <%=names.PermissionPrefix %>Delete;
+        }
+        
+        protected override IQueryable<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
+        {
+            return base.CreateFilteredQuery(input);
+        }
+    }
+}

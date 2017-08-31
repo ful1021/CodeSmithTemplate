@@ -205,7 +205,6 @@ namespace CodeSmithTemplate
         {
             return table.PrimaryKey.MemberColumns[0].Size;
         }
-
         #endregion 处理主键
 
         #region 类型处理
@@ -296,6 +295,44 @@ namespace CodeSmithTemplate
                 case DbType.Xml: return "Xml";
                 default:
                     return column.SystemType.ToString().Substring("System.".Length);
+            }
+        }
+
+        /// <summary>
+        /// 根据列得到转换为C#后类型字符串
+        /// </summary>
+        /// <param name="structType"></param>
+        /// <returns></returns>
+        public static string GetCSharpType(Type structType)
+        {
+            switch (structType.Name)
+            {
+                case "AnsiString":
+                case "AnsiStringFixedLength": return "string";
+                case "Binary": return "byte[]";
+                case "Boolean": return "bool";
+                case "Byte": return "byte";
+                case "Currency": return "decimal";
+                case "Date":
+                case "DateTime":
+                case "DateTime2":
+                case "DateTimeOffset": return "DateTime";
+                case "Decimal": return "decimal";
+                case "Double": return "double";
+                case "Int16": return "short";
+                case "Int32": return "int";
+                case "Int64": return "long";
+                case "Object": return "object";
+                case "SByte": return "sbyte";
+                case "Single": return "float";
+                case "String":
+                case "StringFixedLength": return "string";
+                case "Time": return "TimeSpan";
+                case "UInt16": return "ushort";
+                case "UInt32": return "uint";
+                case "UInt64": return "ulong";
+                default:
+                    return structType.Name;
             }
         }
 
@@ -748,24 +785,6 @@ namespace CodeSmithTemplate
         #endregion 生成文件
 
         /// <summary>
-        /// 根据dll文件，和类名反射获取PropertyInfo集合
-        /// </summary>
-        /// <param name="dllFile"></param>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public static PropertyInfo[] GetProperties(string dllFile, string className)
-        {
-            Assembly assembly = Assembly.LoadFrom(dllFile);
-            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
-            if (type == null)
-            {
-                return new PropertyInfo[0];
-            }
-            PropertyInfo[] propertyinfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            return propertyinfo;
-        }
-
-        /// <summary>
         /// 判断item是否存在list中
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -775,6 +794,27 @@ namespace CodeSmithTemplate
         public static bool IsIn<T>(T item, params T[] list)
         {
             return list.Contains(item);
+        }
+
+
+        /// <summary>
+        /// 获取 AssemblyFile 各命名
+        /// </summary>
+        public ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "")
+        {
+            return new ClassNames()
+            {
+                AppServiceName = entityName + "AppServiceMgmt",
+                DtoName = entityName + "Dto",
+                QueryDtoName = entityName + "QueryDto",
+                GetAllInputName = entityName + "GetAllInput",
+                CreateOrUpdateInputName = entityName + "CreateOrUpdateInput",
+                CreateInputName = entityName + "CreateInput",
+                UpdateInputName = entityName + "UpdateInput",
+                ApplicationDllFile = System.IO.Path.Combine(dllFolder, projectName + ".Application.dll"),
+                CoreDllFile = System.IO.Path.Combine(dllFolder, projectName + ".Core.dll"),
+                PermissionPrefix = permissionModuleName + "-" + entityName + "Management"
+            };
         }
     }
 }
