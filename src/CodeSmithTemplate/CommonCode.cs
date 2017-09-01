@@ -321,6 +321,10 @@ namespace CodeSmithTemplate
                 {
                     return "DateTime?";
                 }
+                else if (propTypeFullName.Contains("Boolean"))
+                {
+                    return "bool?";
+                }
             }
             return type;
         }
@@ -837,7 +841,6 @@ namespace CodeSmithTemplate
         /// <summary>
         /// 判断item是否存在list中
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="item"></param>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -846,6 +849,21 @@ namespace CodeSmithTemplate
             return list.Any(a => item.Equals(a, StringComparison.CurrentCultureIgnoreCase));
         }
 
+        public static bool IsList(PropertyInfo prop)
+        {
+            var fullType = prop.PropertyType.FullName;
+            return fullType.Contains("System.Collections.Generic.ICollection") || fullType.Contains("System.Collections.Generic.List");
+        }
+
+        public static bool IsAbpValueObject(PropertyInfo prop)
+        {
+            var fullType = prop.PropertyType.FullName;
+            return fullType.Contains("Abp.Domain.Values.ValueObject");
+        }
+        public static bool IsAbpCreationAudited(PropertyInfo prop)
+        {
+            return IsIn(prop.Name, "CreatorUserId", "CreationTime", "LastModifierUserId", "LastModificationTime", "IsDeleted", "DeleterUserId", "DeletionTime");
+        }
 
         /// <summary>
         /// 获取 AssemblyFile 各命名
@@ -854,7 +872,7 @@ namespace CodeSmithTemplate
         {
             return new ClassNames()
             {
-                AppServiceName = entityName + "AppServiceMgmt",
+                AppServiceName = entityName + "MgmtAppService",
                 DtoName = entityName + "Dto",
                 QueryDtoName = entityName + "QueryDto",
                 GetAllInputName = entityName + "GetAllInput",
@@ -863,7 +881,7 @@ namespace CodeSmithTemplate
                 UpdateInputName = entityName + "UpdateInput",
                 ApplicationDllFile = System.IO.Path.Combine(dllFolder, projectName + ".Application.dll"),
                 CoreDllFile = System.IO.Path.Combine(dllFolder, projectName + ".Core.dll"),
-                PermissionPrefix = permissionModuleName + "-" + entityName + "Management"
+                PermissionPrefix = permissionModuleName + "_" + entityName + "Management"
             };
         }
     }

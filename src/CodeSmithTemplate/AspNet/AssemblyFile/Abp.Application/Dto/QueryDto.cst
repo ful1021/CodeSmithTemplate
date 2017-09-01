@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
@@ -14,9 +14,6 @@
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var pk = "Id";
-var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -26,21 +23,10 @@ using Abp.AutoMapper;
 namespace <%=assType.Namespace %>.Dto
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %> Dto
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  查询Dto
     /// </summary>
     [AutoMap(typeof(<%=EntityName %>))]
-    public class <%=names.DtoName %> : EntityDto<<%=pktype %>>
+    public class <%=names.QueryDtoName %> : <%=names.DtoName %>
     {
-        <%foreach (var col in entityColumns){%>
-        <%if(IsIn(col.Name,"Id")){continue;} %>
-        <%if(IsAbpCreationAudited(col)){continue;} %>
-        <%if(!col.PropertyType.IsValueType && !IsAbpValueObject(col)){continue;} %>
-        <%if(IsList(col)){continue;} %>
-        /// <summary>
-        /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
-        /// </summary>
-        public <%=GetCSharpNullType(col) %> <%=col.Name %> { get; set; }
-        
-        <%}%>
     }    
 }

@@ -24,7 +24,7 @@ using <%=assType.Namespace %>.Dto;
 namespace <%=assType.Namespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(names.CoreDllFile, EntityName) %>  服务契约
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务契约
     /// </summary>
     public partial interface I<%=names.AppServiceName %> : IApplicationService
     {

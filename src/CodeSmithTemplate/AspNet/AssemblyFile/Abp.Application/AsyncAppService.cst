@@ -26,7 +26,7 @@ using <%=assType.Namespace %>.Dto;
 namespace <%=assType.Namespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(names.CoreDllFile, EntityName) %>  服务实现
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
     /// </summary>
     public partial class <%=names.AppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>, I<%=names.AppServiceName %>
     {
@@ -34,12 +34,12 @@ namespace <%=assType.Namespace %>
         /// 构造函数
         /// </summary>
         /// <param name="repository"></param>
-        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> repository) : base("<%=pk %>", repository)
+        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
         {
             GetAllPermissionName = <%=names.PermissionPrefix %>;
-            CreatePermissionName = <%=names.PermissionPrefix %>Create;
-            UpdatePermissionName = <%=names.PermissionPrefix %>Edit;
-            DeletePermissionName = <%=names.PermissionPrefix %>Delete;
+            CreatePermissionName = <%=names.PermissionPrefix %>_Create;
+            UpdatePermissionName = <%=names.PermissionPrefix %>_Edit;
+            DeletePermissionName = <%=names.PermissionPrefix %>_Delete;
         }
         
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)

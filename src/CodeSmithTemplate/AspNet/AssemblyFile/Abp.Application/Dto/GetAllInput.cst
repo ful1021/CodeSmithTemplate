@@ -14,8 +14,6 @@
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var pk = "Id";
-var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 %>
 using System;
@@ -26,11 +24,18 @@ using Abp.AutoMapper;
 namespace <%=assType.Namespace %>.Dto
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %> Dto
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>   获取所有 输入参数
     /// </summary>
-    [AutoMap(typeof(<%=EntityName %>))]
-    public class <%=names.DtoName %> : EntityDto<<%=pktype %>>
+    public class <%=names.GetAllInputName %> : PagedQueryInput
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public <%=names.GetAllInputName %>()
+        {
+            Sorting = "CreationTime DESC";
+        }
+        
         <%foreach (var col in entityColumns){%>
         <%if(IsIn(col.Name,"Id")){continue;} %>
         <%if(IsAbpCreationAudited(col)){continue;} %>
@@ -39,8 +44,8 @@ namespace <%=assType.Namespace %>.Dto
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>
-        public <%=GetCSharpNullType(col) %> <%=col.Name %> { get; set; }
+        public <%=AssemblyFileHelper.GetCSharpNullType(col, true) %> <%=col.Name %> { get; set; }
         
         <%}%>
-    }    
+    }
 }

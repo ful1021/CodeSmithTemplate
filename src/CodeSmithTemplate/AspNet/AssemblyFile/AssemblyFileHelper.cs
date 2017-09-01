@@ -22,15 +22,16 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         }
 
         /// <summary>
-        /// 根据dll文件，和类名 反射获取PropertyInfo集合
+        /// 获取反射的Assembly 类型
         /// </summary>
         /// <param name="dllFile"></param>
         /// <param name="className"></param>
         /// <returns></returns>
-        public static PropertyInfo[] GetProperties(string dllFile, string className)
+        public static Type GetAssemblyType(string dllFile, string className)
         {
-            System.Type type = GetAssemblyType(dllFile, className);
-            return GetProperties(type);
+            Assembly assembly = GetAssembly(dllFile);
+            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
+            return type;
         }
 
         /// <summary>
@@ -46,19 +47,6 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             }
             PropertyInfo[] propertyinfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             return propertyinfo;
-        }
-
-        /// <summary>
-        /// 获取反射的Assembly 类型
-        /// </summary>
-        /// <param name="dllFile"></param>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public static System.Type GetAssemblyType(string dllFile, string className)
-        {
-            Assembly assembly = GetAssembly(dllFile);
-            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
-            return type;
         }
 
         /// <summary>
@@ -78,7 +66,8 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
 
         public static Dictionary<string, string> GetPropertiesSummary(string dllFile, string className, bool isFirstLetterCamel = true)
         {
-            var props = GetProperties(dllFile, className);
+            var type = GetAssemblyType(dllFile, className);
+            var props = GetProperties(type);
             Dictionary<string, string>
         dict = new Dictionary<string, string>();
             foreach (var item in props)
@@ -126,19 +115,6 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         /// <summary>
         /// 获取类注释
         /// </summary>
-        /// <param name="dllFile"></param>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public static string GetClassSummary(string dllFile, string className)
-        {
-            Assembly assembly = GetAssembly(dllFile);
-            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
-            return GetClassSummary(type);
-        }
-
-        /// <summary>
-        /// 获取类注释
-        /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
         public static string GetClassSummary(Type type)
@@ -148,20 +124,22 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 var info = blqw.Reflection.CSCommentReader.Create(type);
                 if (info != null)
                 {
-                    return info.Summary;
+                    return info.Summary.Replace("\r", "").Replace("\n", "");
                 }
             }
             return "";
         }
 
-
-        public static string GetCSharpNullType(PropertyInfo prop, string dllFile)
+        public static string GetCSharpNullType(PropertyInfo prop, bool isCanNullable = false)
         {
             var propTypeFullName = prop.PropertyType.FullName;
-            var type = CommonCode.GetCSharpNullType(prop); ;
-            if (type.Contains("Nullable"))
+            var type = CommonCode.GetCSharpNullType(prop);
+            if (isCanNullable && type != "string" && !CommonCode.IsAbpValueObject(prop))
             {
-
+                if (!type.EndsWith("?"))
+                {
+                    return type + "?";
+                }
             }
             return type;
         }
