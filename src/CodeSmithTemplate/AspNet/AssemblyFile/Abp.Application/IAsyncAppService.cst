@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>

@@ -1,0 +1,43 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Register Template="../../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Assembly Src="../../../../ClassNames.cs" %>
+<%@ Assembly Src="../../blqw.CSComment/CSComment.cs" %>
+<%@ Import Namespace="blqw.Reflection" %>
+<%@ Assembly Src="../../AssemblyFileHelper.cs" %>
+<%@ Import Namespace="CodeSmithTemplate" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Reflection" %>
+<%
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var pk = "Id";
+var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
+%>
+using System;
+using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+
+namespace <%=assType.Namespace %>.Dto
+{
+    /// <summary>
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %> Dto
+    /// </summary>
+    [AutoMap(typeof(<%=EntityName %>))]
+    public class <%=names.DtoName %> : EntityDto<<%=pktype %>>
+    {
+        <%foreach (var col in entityColumns){%>
+        <%if(IsIn(col.Name,"Id", "LastModifierUserId", "CreatorUserId", "LastModificationTime", "CreationTime")){continue;} %>
+        /// <summary>
+        /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
+        /// </summary>
+        public <%=GetCSharpNullType(col) %> <%=col.Name %> { get; set; }
+        
+        <%}%>
+    }    
+}

@@ -38,7 +38,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static PropertyInfo[] GetProperties(System.Type type)
+        public static PropertyInfo[] GetProperties(Type type)
         {
             if (type == null)
             {
@@ -71,7 +71,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
             if (propInfo != null)
             {
-                return CommonCode.GetCSharpType(propInfo.PropertyType);
+                return CommonCode.GetCSharpType(propInfo);
             }
             return "";
         }
@@ -84,24 +84,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             foreach (var item in props)
             {
                 var name = item.Name;
-                var textInfo = blqw.Reflection.CSCommentReader.Create(item);
-                var text = textInfo != null ? textInfo.Summary : "";
-                if (name == "CreationTime")
-                {
-                    text = "创建时间";
-                }
-                else if (name == "CreatorUserId")
-                {
-                    text = "创建人";
-                }
-                else if (name == "LastModificationTime")
-                {
-                    text = "上次修改时间";
-                }
-                else if (name == "LastModifierUserId")
-                {
-                    text = "上次修改人";
-                }
+                string text = GetPropertySummary(item);
                 if (isFirstLetterCamel)
                 {
                     name = CommonCode.ToFirstLetterCamel(name);
@@ -109,6 +92,35 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 dict[name] = text;
             }
             return dict;
+        }
+
+        /// <summary>
+        /// 得到反射字段 注释
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPropertySummary(PropertyInfo item)
+        {
+            string name = item.Name;
+            var textInfo = blqw.Reflection.CSCommentReader.Create(item);
+            var text = textInfo != null ? textInfo.Summary : "";
+            if (name == "CreationTime")
+            {
+                text = "创建时间";
+            }
+            else if (name == "CreatorUserId")
+            {
+                text = "创建人";
+            }
+            else if (name == "LastModificationTime")
+            {
+                text = "上次修改时间";
+            }
+            else if (name == "LastModifierUserId")
+            {
+                text = "上次修改人";
+            }
+
+            return text;
         }
 
         /// <summary>
@@ -121,6 +133,16 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         {
             Assembly assembly = GetAssembly(dllFile);
             var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
+            return GetClassSummary(type);
+        }
+
+        /// <summary>
+        /// 获取类注释
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetClassSummary(Type type)
+        {
             if (type != null)
             {
                 var info = blqw.Reflection.CSCommentReader.Create(type);
@@ -130,6 +152,18 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 }
             }
             return "";
+        }
+
+
+        public static string GetCSharpNullType(PropertyInfo prop, string dllFile)
+        {
+            var propTypeFullName = prop.PropertyType.FullName;
+            var type = CommonCode.GetCSharpNullType(prop); ;
+            if (type.Contains("Nullable"))
+            {
+
+            }
+            return type;
         }
     }
 }

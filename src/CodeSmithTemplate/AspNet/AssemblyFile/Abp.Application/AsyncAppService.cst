@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
@@ -12,8 +12,8 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var pk = "Id";
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var pk = "Id";
 var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
 %>
 using System;
@@ -42,7 +42,7 @@ namespace <%=assType.Namespace %>
             DeletePermissionName = <%=names.PermissionPrefix %>Delete;
         }
         
-        protected override IQueryable<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
+        protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
         {
             return base.CreateFilteredQuery(input);
         }

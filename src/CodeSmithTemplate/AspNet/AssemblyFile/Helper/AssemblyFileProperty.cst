@@ -5,7 +5,7 @@
 <%@ Property Name="DllFolder" Type="System.String" Category="01.数据源" Editor="System.Windows.Forms.Design.FolderNameEditor" EditorBase="System.Drawing.Design.UITypeEditor" Description="Dll文件目录" Default="F:\Work\code\JK724\JK724.Scm\src\Boss.Scm.Application\bin\DEV\" %>
 
 <%@ Property Name="ProjectName" Type="System.String" Category="01.数据源" Description="项目名称" Default="Boss.Scm" %>
-<%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="实体名称" Default="InventoryCargoOwner" %>
+<%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="实体名称" Default="InventoryAdjustment" %>
 <%@ Property Name="PermissionModuleName" Type="System.String" Category="01.数据源" Description="权限模块名称" Default="StorageCenter" %>
 
 <%@ Assembly Src="../../../ClassNames.cs" %>
