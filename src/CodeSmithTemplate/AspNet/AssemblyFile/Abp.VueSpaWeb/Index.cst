@@ -12,9 +12,9 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-Dictionary<string, string> queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
-Dictionary<string, string> getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
-Dictionary<string, string> createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.QueryDtoName);
+var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
+var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
+var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.QueryDtoName);
 var excelControllerName = "Wms/" + EntityName;
 %>
 <template>

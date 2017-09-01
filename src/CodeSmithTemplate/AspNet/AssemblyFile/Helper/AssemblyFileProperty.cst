@@ -9,6 +9,5 @@
 <%@ Property Name="PermissionModuleName" Type="System.String" Category="01.数据源" Description="权限模块名称" Default="StorageCenter" %>
 
 <%@ Assembly Src="../../../ClassNames.cs" %>
-<%@ Assembly Src="../blqw.CSComment/CSComment.cs" %>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>

@@ -23,10 +23,15 @@ using Abp.AutoMapper;
 namespace <%=assType.Namespace %>.Dto
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  查询Dto
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>   修改 输入参数
     /// </summary>
-    [AutoMap(typeof(<%=EntityName %>))]
-    public class <%=names.QueryDtoName %> : <%=names.DtoName %>
+    public class <%=names.UpdateInputName %> : <%=names.DtoName %>
     {
-    }    
+        /// <summary>
+        /// 构造函数 设置默认值
+        /// </summary>
+        public <%=names.UpdateInputName %>()
+        {
+        }
+    }
 }

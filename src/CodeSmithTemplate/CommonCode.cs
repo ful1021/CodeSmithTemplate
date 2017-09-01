@@ -61,6 +61,8 @@ namespace CodeSmithTemplate
 
         #endregion 设置公共属性
 
+        #region 基于Database
+
         #region 处理列
 
         /// <summary>
@@ -157,6 +159,7 @@ namespace CodeSmithTemplate
             }
             return sb.ToString();
         }
+
         /// <summary>
         /// 得到表注释
         /// </summary>
@@ -166,6 +169,7 @@ namespace CodeSmithTemplate
         {
             return SourceTable.Description;
         }
+
         #endregion 处理Table
 
         #region 处理主键
@@ -205,6 +209,7 @@ namespace CodeSmithTemplate
         {
             return table.PrimaryKey.MemberColumns[0].Size;
         }
+
         #endregion 处理主键
 
         #region 类型处理
@@ -295,86 +300,6 @@ namespace CodeSmithTemplate
                 case DbType.Xml: return "Xml";
                 default:
                     return column.SystemType.ToString().Substring("System.".Length);
-            }
-        }
-
-        /// <summary>
-        /// 根据列得到转换为C#后，可空类型字符串 如：int?
-        /// </summary>
-        /// <param name="structType"></param>
-        /// <returns></returns>
-        public static string GetCSharpNullType(PropertyInfo prop)
-        {
-            var propTypeFullName = prop.PropertyType.FullName;
-            var type = GetCSharpType(prop.PropertyType.FullName);
-            if (type.Contains("Nullable"))
-            {
-                if (propTypeFullName.Contains("Int32"))
-                {
-                    return "int?";
-                }
-                else if (propTypeFullName.Contains("Int64"))
-                {
-                    return "long?";
-                }
-                else if (propTypeFullName.Contains("DateTime"))
-                {
-                    return "DateTime?";
-                }
-                else if (propTypeFullName.Contains("Boolean"))
-                {
-                    return "bool?";
-                }
-            }
-            return type;
-        }
-
-        /// <summary>
-        /// 根据列得到转换为C#后类型字符串
-        /// </summary>
-        /// <param name="structType"></param>
-        /// <returns></returns>
-        public static string GetCSharpType(PropertyInfo prop)
-        {
-            return GetCSharpType(prop.PropertyType.FullName);
-        }
-
-        /// <summary>
-        /// 根据列得到转换为C#后类型字符串
-        /// </summary>
-        /// <param name="structType"></param>
-        /// <returns></returns>
-        public static string GetCSharpType(string typeName)
-        {
-            switch (typeName)
-            {
-                case "System.AnsiString":
-                case "System.AnsiStringFixedLength": return "string";
-                case "System.Binary": return "byte[]";
-                case "System.Boolean": return "bool";
-                case "System.Byte": return "byte";
-                case "System.Currency": return "decimal";
-                case "System.Date":
-                case "System.DateTime":
-                case "System.DateTime2":
-                case "System.DateTimeOffset": return "DateTime";
-                case "System.Decimal": return "decimal";
-                case "System.Double": return "double";
-                case "System.Guid": return "Guid";
-                case "System.Int16": return "short";
-                case "System.Int32": return "int";
-                case "System.Int64": return "long";
-                case "System.Object": return "object";
-                case "System.SByte": return "sbyte";
-                case "System.Single": return "float";
-                case "System.String":
-                case "System.StringFixedLength": return "string";
-                case "System.Time": return "TimeSpan";
-                case "System.UInt16": return "ushort";
-                case "System.UInt32": return "uint";
-                case "System.UInt64": return "ulong";
-                default:
-                    return typeName;
             }
         }
 
@@ -622,6 +547,194 @@ namespace CodeSmithTemplate
 
         #endregion 类型处理
 
+        #region 生成文件
+
+        /// <summary>
+        /// 通用根据模板生成文件方法
+        /// </summary>
+        /// <param name="isRender"></param>
+        /// <param name="templatePath"></param>
+        /// <param name="directory"></param>
+        /// <param name="tables"></param>
+        /// <param name="className"></param>
+        /// <param name="splitTableName"></param>
+        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null, string splitTableName = "")
+        {
+            if (isRender)
+            {
+                if (directory.IndexOf("{dbname}") >= 0)
+                {
+                    directory = directory.Replace("{dbname}", tables[0].Database.Name);
+                }
+                //载入子模板
+                CodeTemplate template = GetCodeTemplate(templatePath);
+                foreach (var tab in tables)
+                {
+                    if (directory.IndexOf("{tablename}") >= 0)
+                    {
+                        directory = directory.Replace("{tablename}", tab.Name);
+                        if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                    }
+                    CopyPropertiesTo(template);
+                    template.SetProperty("SourceTable", tab);
+
+                    string currclassName = null;
+                    if (className == null)
+                    {
+                        currclassName = tab.Name;
+                    }
+                    else
+                    {
+                        currclassName = className(tab);
+                    }
+                    if (!string.IsNullOrWhiteSpace(splitTableName) && currclassName.IndexOf("{tablename_split_last}") >= 0)
+                    {
+                        var temps = tab.Name.Split(splitTableName.ToArray());
+                        if (temps != null && temps.Length > 1)
+                        {
+                            currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
+                        }
+                    }
+                    if (currclassName.EndsWith(".cs"))
+                    {
+                        template.RenderToFile(directory + currclassName, true);
+                    }
+                    else
+                    {
+                        template.RenderToFile(directory + currclassName + ".cs", true);
+                    }
+                }
+                Response.WriteLine(templatePath + "代码生成完毕！");
+            }
+        }
+
+        /// <summary>
+        /// 通用根据模板生成文件方法
+        /// </summary>
+        /// <param name="isRender"></param>
+        /// <param name="templatePath"></param>
+        /// <param name="directory"></param>
+        /// <param name="Tables"></param>
+        /// <param name="fileName"></param>
+        public void RenderToFileByTables(bool isRender, string templatePath, string directory, TableSchemaCollection Tables, string fileName = null)
+        {
+            if (isRender)
+            {
+                if (directory.IndexOf("{dbname}") >= 0)
+                {
+                    directory = directory.Replace("{dbname}", Tables[0].Database.Name);
+                }
+                if (string.IsNullOrWhiteSpace(fileName))
+                {
+                    fileName = Tables[0].Database.Name;
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(fileName) && fileName.IndexOf("{dbname}") >= 0)
+                    {
+                        fileName = fileName.Replace("{dbname}", Tables[0].Database.Name);
+                    }
+                }
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                //载入子模板
+                CodeTemplate template = GetCodeTemplate(templatePath);
+
+                CopyPropertiesTo(template);
+                template.SetProperty("Tables", Tables);
+
+                template.RenderToFile(directory + fileName, true);
+                Response.WriteLine(templatePath + "代码生成完毕！");
+            }
+        }
+
+        #endregion 生成文件
+
+        #endregion 基于Database
+
+        #region 类型处理
+
+        /// <summary>
+        /// 根据列得到转换为C#后，可空类型字符串 如：int?
+        /// </summary>
+        /// <param name="structType"></param>
+        /// <returns></returns>
+        public static string GetCSharpNullType(PropertyInfo prop)
+        {
+            var propTypeFullName = prop.PropertyType.FullName;
+            var type = GetCSharpType(prop.PropertyType.FullName);
+            if (type.Contains("Nullable"))
+            {
+                if (propTypeFullName.Contains("Int32"))
+                {
+                    return "int?";
+                }
+                else if (propTypeFullName.Contains("Int64"))
+                {
+                    return "long?";
+                }
+                else if (propTypeFullName.Contains("DateTime"))
+                {
+                    return "DateTime?";
+                }
+                else if (propTypeFullName.Contains("Boolean"))
+                {
+                    return "bool?";
+                }
+            }
+            return type;
+        }
+
+        /// <summary>
+        /// 根据列得到转换为C#后类型字符串
+        /// </summary>
+        /// <param name="structType"></param>
+        /// <returns></returns>
+        public static string GetCSharpType(PropertyInfo prop)
+        {
+            return GetCSharpType(prop.PropertyType.FullName);
+        }
+
+        /// <summary>
+        /// 根据列得到转换为C#后类型字符串
+        /// </summary>
+        /// <param name="structType"></param>
+        /// <returns></returns>
+        public static string GetCSharpType(string typeName)
+        {
+            switch (typeName)
+            {
+                case "System.AnsiString":
+                case "System.AnsiStringFixedLength": return "string";
+                case "System.Binary": return "byte[]";
+                case "System.Boolean": return "bool";
+                case "System.Byte": return "byte";
+                case "System.Currency": return "decimal";
+                case "System.Date":
+                case "System.DateTime":
+                case "System.DateTime2":
+                case "System.DateTimeOffset": return "DateTime";
+                case "System.Decimal": return "decimal";
+                case "System.Double": return "double";
+                case "System.Guid": return "Guid";
+                case "System.Int16": return "short";
+                case "System.Int32": return "int";
+                case "System.Int64": return "long";
+                case "System.Object": return "object";
+                case "System.SByte": return "sbyte";
+                case "System.Single": return "float";
+                case "System.String":
+                case "System.StringFixedLength": return "string";
+                case "System.Time": return "TimeSpan";
+                case "System.UInt16": return "ushort";
+                case "System.UInt32": return "uint";
+                case "System.UInt64": return "ulong";
+                default:
+                    return typeName;
+            }
+        }
+
+        #endregion 类型处理
+
         #region 字符串扩展方法
 
         /// <summary>
@@ -725,7 +838,6 @@ namespace CodeSmithTemplate
                 throw new ApplicationException(errorMessage.ToString());
             }
         }
-
         /// <summary>
         /// 通用根据模板生成文件方法
         /// </summary>
@@ -734,96 +846,25 @@ namespace CodeSmithTemplate
         /// <param name="directory"></param>
         /// <param name="tables"></param>
         /// <param name="className"></param>
-        /// <param name="splitTableName"></param>
-        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null, string splitTableName = "")
+        public void RenderToFile(bool isRender, string templatePath, string directory, string currclassName)
         {
             if (isRender)
             {
-                if (directory.IndexOf("{dbname}") >= 0)
-                {
-                    directory = directory.Replace("{dbname}", tables[0].Database.Name);
-                }
                 //载入子模板
                 CodeTemplate template = GetCodeTemplate(templatePath);
-                foreach (TableSchema tab in tables)
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                CopyPropertiesTo(template);
+                if (currclassName.EndsWith(".cs"))
                 {
-                    if (directory.IndexOf("{tablename}") >= 0)
-                    {
-                        directory = directory.Replace("{tablename}", tab.Name);
-                        if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                    }
-                    CopyPropertiesTo(template);
-                    template.SetProperty("SourceTable", tab);
-
-                    string currclassName = null;
-                    if (className == null)
-                    {
-                        currclassName = tab.Name;
-                    }
-                    else
-                    {
-                        currclassName = className(tab);
-                    }
-                    if (!string.IsNullOrWhiteSpace(splitTableName) && currclassName.IndexOf("{tablename_split_last}") >= 0)
-                    {
-                        var temps = tab.Name.Split(splitTableName.ToArray());
-                        if (temps != null && temps.Length > 1)
-                        {
-                            currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
-                        }
-                    }
-                    if (currclassName.EndsWith(".cs"))
-                    {
-                        template.RenderToFile(directory + currclassName, true);
-                    }
-                    else
-                    {
-                        template.RenderToFile(directory + currclassName + ".cs", true);
-                    }
-                }
-                Response.WriteLine(templatePath + "代码生成完毕！");
-            }
-        }
-
-        /// <summary>
-        /// 通用根据模板生成文件方法
-        /// </summary>
-        /// <param name="isRender"></param>
-        /// <param name="templatePath"></param>
-        /// <param name="directory"></param>
-        /// <param name="Tables"></param>
-        /// <param name="fileName"></param>
-        public void RenderToFileByTables(bool isRender, string templatePath, string directory, TableSchemaCollection Tables, string fileName = null)
-        {
-            if (isRender)
-            {
-                if (directory.IndexOf("{dbname}") >= 0)
-                {
-                    directory = directory.Replace("{dbname}", Tables[0].Database.Name);
-                }
-                if (string.IsNullOrWhiteSpace(fileName))
-                {
-                    fileName = Tables[0].Database.Name;
+                    template.RenderToFile(Path.Combine(directory, currclassName), true);
                 }
                 else
                 {
-                    if (!string.IsNullOrWhiteSpace(fileName) && fileName.IndexOf("{dbname}") >= 0)
-                    {
-                        fileName = fileName.Replace("{dbname}", Tables[0].Database.Name);
-                    }
+                    template.RenderToFile(Path.Combine(directory, currclassName) + ".cs", true);
                 }
-                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                //载入子模板
-                CodeTemplate template = GetCodeTemplate(templatePath);
-
-                CopyPropertiesTo(template);
-                template.SetProperty("Tables", Tables);
-
-                template.RenderToFile(directory + fileName, true);
                 Response.WriteLine(templatePath + "代码生成完毕！");
             }
         }
-
         #endregion 生成文件
 
         /// <summary>
@@ -860,6 +901,7 @@ namespace CodeSmithTemplate
             var fullType = prop.PropertyType.FullName;
             return fullType.Contains("Abp.Domain.Values.ValueObject");
         }
+
         public static bool IsAbpCreationAudited(PropertyInfo prop)
         {
             return IsIn(prop.Name, "CreatorUserId", "CreationTime", "LastModifierUserId", "LastModificationTime", "IsDeleted", "DeleterUserId", "DeletionTime");

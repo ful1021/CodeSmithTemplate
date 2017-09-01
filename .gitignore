@@ -198,3 +198,4 @@ FakesAssemblies/
 # Custom
 Logs/
 /src/MyCompanyName.AbpZeroTemplate.Web/Logs
+/ConsoleApplication1

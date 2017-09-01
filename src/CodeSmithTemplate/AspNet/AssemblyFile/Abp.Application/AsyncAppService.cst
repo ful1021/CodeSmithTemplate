@@ -9,6 +9,7 @@
 <%@ Assembly Src="../AssemblyFileHelper.cs" %>
 <%@ Import Namespace="CodeSmithTemplate" %>
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);

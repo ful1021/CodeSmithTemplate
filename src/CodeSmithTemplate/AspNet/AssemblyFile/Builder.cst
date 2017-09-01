@@ -1,0 +1,46 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Register Template="Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Register Template="Helper/GenerateLayerProperty.cst" Name="GenerateLayerProperty" MergeProperties="True" %>  
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Assembly Src="../../ClassNames.cs" %>
+<%@ Assembly Src="blqw.CSComment/CSComment.cs" %>
+<%@ Import Namespace="blqw.Reflection" %>
+<%@ Assembly Src="AssemblyFileHelper.cs" %>
+<%@ Import Namespace="CodeSmithTemplate" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.IO" %>
+<%
+ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+Type assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+%>
+<%
+// 设定输出文件的顶级根目录
+if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
+{
+    var currClassTemplateName = "Abp.Application";
+    var currClasslibraryName = ProjectName + ".Application";
+    var root_directory = OutputDirectory + "\\" + currClasslibraryName + "\\";
+    var directory = root_directory + assType.Namespace.Replace(ProjectName,"").Replace(".","\\");
+    
+    RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAsyncAppService.cst", directory, names.AppServiceName);
+    RenderToFile(AppAsyncService, currClassTemplateName + "\\AsyncAppService.cst", directory, "I"+names.AppServiceName);
+}
+{
+    var currClassTemplateName = "Abp.Application\\Dto";
+    var currClasslibraryName = ProjectName + ".Application";
+    var root_directory = OutputDirectory + "\\" + currClasslibraryName + "\\";
+    var directory = root_directory + assType.Namespace.Replace(ProjectName,"").Replace(".","\\")+"\\Dto\\";
+    
+    RenderToFile(AppGetAllDto, currClassTemplateName + "\\GetAllInput.cst", directory, names.GetAllInputName);
+    RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, "I"+names.QueryDtoName);
+    RenderToFile(AppDto, currClassTemplateName + "\\Dto.cst", directory, "I"+names.DtoName);
+    RenderToFile(AppCreateDto, currClassTemplateName + "\\CreateInput.cst", directory, "I"+names.CreateInputName);
+    RenderToFile(AppUpdateDto, currClassTemplateName + "\\UpdateInput.cst", directory, "I"+names.UpdateInputName);
+}
+//指定使用资源管理器打开文件夹
+System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
+%>
