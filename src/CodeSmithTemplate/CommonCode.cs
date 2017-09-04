@@ -547,108 +547,6 @@ namespace CodeSmithTemplate
 
         #endregion 类型处理
 
-        #region 生成文件
-
-        /// <summary>
-        /// 通用根据模板生成文件方法
-        /// </summary>
-        /// <param name="isRender"></param>
-        /// <param name="templatePath"></param>
-        /// <param name="directory"></param>
-        /// <param name="tables"></param>
-        /// <param name="className"></param>
-        /// <param name="splitTableName"></param>
-        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null, string splitTableName = "")
-        {
-            if (isRender)
-            {
-                if (directory.IndexOf("{dbname}") >= 0)
-                {
-                    directory = directory.Replace("{dbname}", tables[0].Database.Name);
-                }
-                //载入子模板
-                CodeTemplate template = GetCodeTemplate(templatePath);
-                foreach (var tab in tables)
-                {
-                    if (directory.IndexOf("{tablename}") >= 0)
-                    {
-                        directory = directory.Replace("{tablename}", tab.Name);
-                        if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                    }
-                    CopyPropertiesTo(template);
-                    template.SetProperty("SourceTable", tab);
-
-                    string currclassName = null;
-                    if (className == null)
-                    {
-                        currclassName = tab.Name;
-                    }
-                    else
-                    {
-                        currclassName = className(tab);
-                    }
-                    if (!string.IsNullOrWhiteSpace(splitTableName) && currclassName.IndexOf("{tablename_split_last}") >= 0)
-                    {
-                        var temps = tab.Name.Split(splitTableName.ToArray());
-                        if (temps != null && temps.Length > 1)
-                        {
-                            currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
-                        }
-                    }
-                    if (currclassName.EndsWith(".cs"))
-                    {
-                        template.RenderToFile(directory + currclassName, true);
-                    }
-                    else
-                    {
-                        template.RenderToFile(directory + currclassName + ".cs", true);
-                    }
-                }
-                Response.WriteLine(templatePath + "代码生成完毕！");
-            }
-        }
-
-        /// <summary>
-        /// 通用根据模板生成文件方法
-        /// </summary>
-        /// <param name="isRender"></param>
-        /// <param name="templatePath"></param>
-        /// <param name="directory"></param>
-        /// <param name="Tables"></param>
-        /// <param name="fileName"></param>
-        public void RenderToFileByTables(bool isRender, string templatePath, string directory, TableSchemaCollection Tables, string fileName = null)
-        {
-            if (isRender)
-            {
-                if (directory.IndexOf("{dbname}") >= 0)
-                {
-                    directory = directory.Replace("{dbname}", Tables[0].Database.Name);
-                }
-                if (string.IsNullOrWhiteSpace(fileName))
-                {
-                    fileName = Tables[0].Database.Name;
-                }
-                else
-                {
-                    if (!string.IsNullOrWhiteSpace(fileName) && fileName.IndexOf("{dbname}") >= 0)
-                    {
-                        fileName = fileName.Replace("{dbname}", Tables[0].Database.Name);
-                    }
-                }
-                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                //载入子模板
-                CodeTemplate template = GetCodeTemplate(templatePath);
-
-                CopyPropertiesTo(template);
-                template.SetProperty("Tables", Tables);
-
-                template.RenderToFile(directory + fileName, true);
-                Response.WriteLine(templatePath + "代码生成完毕！");
-            }
-        }
-
-        #endregion 生成文件
-
         #endregion 基于Database
 
         #region 类型处理
@@ -838,6 +736,7 @@ namespace CodeSmithTemplate
                 throw new ApplicationException(errorMessage.ToString());
             }
         }
+
         /// <summary>
         /// 通用根据模板生成文件方法
         /// </summary>
@@ -846,6 +745,103 @@ namespace CodeSmithTemplate
         /// <param name="directory"></param>
         /// <param name="tables"></param>
         /// <param name="className"></param>
+        /// <param name="splitTableName"></param>
+        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null, string splitTableName = "")
+        {
+            if (isRender)
+            {
+                if (directory.IndexOf("{dbname}") >= 0)
+                {
+                    directory = directory.Replace("{dbname}", tables[0].Database.Name);
+                }
+                //载入子模板
+                CodeTemplate template = GetCodeTemplate(templatePath);
+                foreach (var tab in tables)
+                {
+                    if (directory.IndexOf("{tablename}") >= 0)
+                    {
+                        directory = directory.Replace("{tablename}", tab.Name);
+                        if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                    }
+                    CopyPropertiesTo(template);
+                    template.SetProperty("SourceTable", tab);
+
+                    string currclassName = null;
+                    if (className == null)
+                    {
+                        currclassName = tab.Name;
+                    }
+                    else
+                    {
+                        currclassName = className(tab);
+                    }
+                    if (!string.IsNullOrWhiteSpace(splitTableName) && currclassName.IndexOf("{tablename_split_last}") >= 0)
+                    {
+                        var temps = tab.Name.Split(splitTableName.ToArray());
+                        if (temps != null && temps.Length > 1)
+                        {
+                            currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
+                        }
+                    }
+                    if (currclassName.EndsWith(".cs"))
+                    {
+                        template.RenderToFile(directory + currclassName, true);
+                    }
+                    else
+                    {
+                        template.RenderToFile(directory + currclassName + ".cs", true);
+                    }
+                }
+                Response.WriteLine(templatePath + "代码生成完毕！");
+            }
+        }
+
+        /// <summary>
+        /// 通用根据模板生成文件方法
+        /// </summary>
+        /// <param name="isRender"></param>
+        /// <param name="templatePath"></param>
+        /// <param name="directory"></param>
+        /// <param name="Tables"></param>
+        /// <param name="fileName"></param>
+        public void RenderToFileByTables(bool isRender, string templatePath, string directory, TableSchemaCollection Tables, string fileName = null)
+        {
+            if (isRender)
+            {
+                if (directory.IndexOf("{dbname}") >= 0)
+                {
+                    directory = directory.Replace("{dbname}", Tables[0].Database.Name);
+                }
+                if (string.IsNullOrWhiteSpace(fileName))
+                {
+                    fileName = Tables[0].Database.Name;
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(fileName) && fileName.IndexOf("{dbname}") >= 0)
+                    {
+                        fileName = fileName.Replace("{dbname}", Tables[0].Database.Name);
+                    }
+                }
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                //载入子模板
+                CodeTemplate template = GetCodeTemplate(templatePath);
+
+                CopyPropertiesTo(template);
+                template.SetProperty("Tables", Tables);
+
+                template.RenderToFile(directory + fileName, true);
+                Response.WriteLine(templatePath + "代码生成完毕！");
+            }
+        }
+
+        /// <summary>
+        /// 通用根据模板生成文件方法
+        /// </summary>
+        /// <param name="isRender"></param>
+        /// <param name="templatePath"></param>
+        /// <param name="directory"></param>
+        /// <param name="currclassName"></param>
         public void RenderToFile(bool isRender, string templatePath, string directory, string currclassName)
         {
             if (isRender)
@@ -865,6 +861,7 @@ namespace CodeSmithTemplate
                 Response.WriteLine(templatePath + "代码生成完毕！");
             }
         }
+
         #endregion 生成文件
 
         /// <summary>
@@ -921,8 +918,8 @@ namespace CodeSmithTemplate
                 CreateOrUpdateInputName = entityName + "CreateOrUpdateInput",
                 CreateInputName = entityName + "CreateInput",
                 UpdateInputName = entityName + "UpdateInput",
-                ApplicationDllFile = System.IO.Path.Combine(dllFolder, projectName + ".Application.dll"),
-                CoreDllFile = System.IO.Path.Combine(dllFolder, projectName + ".Core.dll"),
+                ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
+                CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
                 PermissionPrefix = permissionModuleName + "_" + entityName + "Management"
             };
         }
