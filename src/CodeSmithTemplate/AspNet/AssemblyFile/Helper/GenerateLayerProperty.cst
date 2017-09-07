@@ -20,6 +20,8 @@ Default="true"%>
 Default="true"%>
 <%@ Property Name="AppIAsyncService" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务契约" 
 Default="true"%>
+<%@ Property Name="VueSpaWeb" Type="System.Boolean" Category="04.代码生成层" Description="生成VueSpaWeb" 
+Default="true"%>
 
 
 

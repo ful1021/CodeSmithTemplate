@@ -783,7 +783,7 @@ namespace CodeSmithTemplate
                             currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
                         }
                     }
-                    if (currclassName.EndsWith(".cs"))
+                    if (currclassName.IndexOf(".") > 0)
                     {
                         template.RenderToFile(directory + currclassName, true);
                     }
@@ -850,7 +850,7 @@ namespace CodeSmithTemplate
                 CodeTemplate template = GetCodeTemplate(templatePath);
                 if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
                 CopyPropertiesTo(template);
-                if (currclassName.EndsWith(".cs"))
+                if (currclassName.IndexOf(".") > 0)
                 {
                     template.RenderToFile(Path.Combine(directory, currclassName), true);
                 }

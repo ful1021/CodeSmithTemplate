@@ -41,6 +41,11 @@ if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirector
     RenderToFile(AppCreateDto, currClassTemplateName + "\\CreateInput.cst", directory, "I"+names.CreateInputName);
     RenderToFile(AppUpdateDto, currClassTemplateName + "\\UpdateInput.cst", directory, "I"+names.UpdateInputName);
 }
+{
+    var currClassTemplateName = "Abp.VueSpaWeb";
+    var directory = OutputDirectory + "\\";;
+    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  ToFirstLetterCamel(EntityName)+ ".vue");
+}
 //指定使用资源管理器打开文件夹
 System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
 %>
