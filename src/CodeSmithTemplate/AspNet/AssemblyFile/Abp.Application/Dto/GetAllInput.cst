@@ -39,7 +39,7 @@ namespace <%=assType.Namespace %>.Dto
         <%foreach (var col in entityColumns){%>
         <%if(IsIn(col.Name,"Id")){continue;} %>
         <%if(IsAbpCreationAudited(col)){continue;} %>
-        <%if(!col.PropertyType.IsValueType && !IsAbpValueObject(col)){continue;} %>
+        <%if(col.PropertyType.IsValueType || IsAbpValueObject(col)){continue;} %>
         <%if(IsList(col)){continue;} %>
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>

@@ -26,8 +26,8 @@ if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirector
     var root_directory = OutputDirectory + "\\" + currClasslibraryName + "\\";
     var directory = root_directory + assType.Namespace.Replace(ProjectName,"").Replace(".","\\");
     
-    RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAsyncAppService.cst", directory, names.AppServiceName);
-    RenderToFile(AppAsyncService, currClassTemplateName + "\\AsyncAppService.cst", directory, "I"+names.AppServiceName);
+    RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAsyncAppService.cst", directory, "I" + names.AppServiceName);
+    RenderToFile(AppAsyncService, currClassTemplateName + "\\AsyncAppService.cst", directory, names.AppServiceName);
 }
 {
     var currClassTemplateName = "Abp.Application\\Dto";
@@ -36,16 +36,16 @@ if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirector
     var directory = root_directory + assType.Namespace.Replace(ProjectName,"").Replace(".","\\")+"\\Dto\\";
     
     RenderToFile(AppGetAllDto, currClassTemplateName + "\\GetAllInput.cst", directory, names.GetAllInputName);
-    RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, "I"+names.QueryDtoName);
-    RenderToFile(AppDto, currClassTemplateName + "\\Dto.cst", directory, "I"+names.DtoName);
-    RenderToFile(AppCreateDto, currClassTemplateName + "\\CreateInput.cst", directory, "I"+names.CreateInputName);
-    RenderToFile(AppUpdateDto, currClassTemplateName + "\\UpdateInput.cst", directory, "I"+names.UpdateInputName);
+    RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, names.QueryDtoName);
+    RenderToFile(AppDto, currClassTemplateName + "\\Dto.cst", directory, names.DtoName);
+    RenderToFile(AppCreateDto, currClassTemplateName + "\\CreateInput.cst", directory, names.CreateInputName);
+    RenderToFile(AppUpdateDto, currClassTemplateName + "\\UpdateInput.cst", directory, names.UpdateInputName);
 }
-{
-    var currClassTemplateName = "Abp.VueSpaWeb";
-    var directory = OutputDirectory + "\\";;
-    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  ToFirstLetterCamel(EntityName)+ ".vue");
-}
+//{
+//    var currClassTemplateName = "Abp.VueSpaWeb";
+//    var directory = OutputDirectory + "\\";;
+//    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  ToFirstLetterCamel(EntityName)+ ".vue");
+//}
 //指定使用资源管理器打开文件夹
 System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
 %>

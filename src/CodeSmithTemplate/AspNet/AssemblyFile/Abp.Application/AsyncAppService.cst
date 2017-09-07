@@ -14,6 +14,7 @@
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var pk = "Id";
 var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
 %>
@@ -21,7 +22,9 @@ using System;
 using System.Linq;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Linq.Extensions;
+using <%=ProjectName %>.Authorization;
 using <%=assType.Namespace %>.Dto;
 
 namespace <%=assType.Namespace %>
@@ -34,18 +37,28 @@ namespace <%=assType.Namespace %>
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="repository"></param>
+        /// <param name="<%=ToFirstLetterCamel(EntityName) %>repository"></param>
         public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
         {
-            GetAllPermissionName = <%=names.PermissionPrefix %>;
-            CreatePermissionName = <%=names.PermissionPrefix %>_Create;
-            UpdatePermissionName = <%=names.PermissionPrefix %>_Edit;
-            DeletePermissionName = <%=names.PermissionPrefix %>_Delete;
+            GetAllPermissionName = <%=names.AppServicePermissionPrefix %>;
+            CreatePermissionName = <%=names.AppServicePermissionPrefix %>_Create;
+            UpdatePermissionName = <%=names.AppServicePermissionPrefix %>_Edit;
+            DeletePermissionName = <%=names.AppServicePermissionPrefix %>_Delete;
         }
         
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
         {
-            return base.CreateFilteredQuery(input);
+            return base.CreateFilteredQuery(input)
+                <%foreach (var col in entityColumns){%>
+                <%if(IsIn(col.Name,"Id")){continue;} %>
+                <%if(IsAbpCreationAudited(col)){continue;} %>
+                <%if(col.PropertyType.IsValueType || IsAbpValueObject(col)){continue;} %>
+                <%if(IsList(col)){continue;} %>
+                <%if(AssemblyFileHelper.GetCSharpNullType(col, true)=="string"){ %>
+                .WhereIf(input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %> == input.<%=col.Name %>)
+                <%}%>
+                <%}%>
+                ;
         }
     }
 }

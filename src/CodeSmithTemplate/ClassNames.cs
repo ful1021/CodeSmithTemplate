@@ -19,5 +19,6 @@ namespace CodeSmithTemplate
         public string ApplicationDllFile { get; set; }
         public string CoreDllFile { get; set; }
         public string PermissionPrefix { get; set; }
+        public string AppServicePermissionPrefix { get; set; }
     }
 }
