@@ -90,9 +90,13 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         public static Dictionary<string, string> GetPropertiesSummary(string dllFile, string className, bool isFirstLetterCamel = true)
         {
             var type = GetAssemblyType(dllFile, className);
-            var props = GetProperties(type);
-            Dictionary<string, string>
-        dict = new Dictionary<string, string>();
+            var props = GetProperties(type).ToList();
+            return GetPropertiesSummary(props, isFirstLetterCamel);
+        }
+
+        public static Dictionary<string, string> GetPropertiesSummary(List<PropertyInfo> props, bool isFirstLetterCamel = true)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
             foreach (var item in props)
             {
                 var name = item.Name;

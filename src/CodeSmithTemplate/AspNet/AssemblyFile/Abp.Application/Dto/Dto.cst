@@ -17,6 +17,7 @@ var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var pk = "Id";
 var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var dtoColumns = DtoColumns(entityColumns);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -31,11 +32,7 @@ namespace <%=assType.Namespace %>.Dto
     [AutoMap(typeof(<%=EntityName %>))]
     public class <%=names.DtoName %> : EntityDto<<%=pktype %>>
     {
-        <%foreach (var col in entityColumns){%>
-        <%if(IsIn(col.Name,"Id")){continue;} %>
-        <%if(IsAbpCreationAudited(col)){continue;} %>
-        <%if(col.PropertyType.IsValueType || IsAbpValueObject(col)){continue;} %>
-        <%if(IsList(col)){continue;} %>
+        <%foreach (var col in dtoColumns){%>
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>

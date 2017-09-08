@@ -15,6 +15,7 @@
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var getAllInputColumns = DtoColumns(entityColumns);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -36,11 +37,7 @@ namespace <%=assType.Namespace %>.Dto
             Sorting = "CreationTime DESC";
         }
         
-        <%foreach (var col in entityColumns){%>
-        <%if(IsIn(col.Name,"Id")){continue;} %>
-        <%if(IsAbpCreationAudited(col)){continue;} %>
-        <%if(col.PropertyType.IsValueType || IsAbpValueObject(col)){continue;} %>
-        <%if(IsList(col)){continue;} %>
+        <%foreach (var col in getAllInputColumns){%>
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>

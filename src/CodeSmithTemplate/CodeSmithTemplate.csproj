@@ -63,6 +63,7 @@
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\Dto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\QueryDto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IAsyncAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\BuildMenu.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\Index.cst" />
     <None Include="AspNet\AssemblyFile\Builder.cst" />
     <None Include="AspNet\AssemblyFile\Helper\AssemblyFileProperty.cst" />

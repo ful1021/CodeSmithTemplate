@@ -909,6 +909,7 @@ namespace CodeSmithTemplate
         /// </summary>
         public ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "")
         {
+            var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
             return new ClassNames()
             {
                 AppServiceName = entityName + "MgmtAppService",
@@ -920,9 +921,35 @@ namespace CodeSmithTemplate
                 UpdateInputName = entityName + "Dto",// "UpdateInput",
                 ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
                 CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
-                PermissionPrefix = permissionModuleName + "_" + entityName + "Management",
-                AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionModuleName + "_" + entityName
+                PermissionPrefix = permissionPrefix,
+                AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
             };
+        }
+
+        public List<PropertyInfo> DtoColumns(PropertyInfo[] entityColumns)
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in entityColumns)
+            {
+                if (IsIn(col.Name, "Id"))
+                {
+                    continue;
+                }
+                if (IsAbpCreationAudited(col))
+                {
+                    continue;
+                }
+                if (col.PropertyType.IsValueType || IsAbpValueObject(col))
+                {
+                    continue;
+                }
+                if (IsList(col))
+                {
+                    continue;
+                }
+                list.Add(col);
+            }
+            return list;
         }
     }
 }

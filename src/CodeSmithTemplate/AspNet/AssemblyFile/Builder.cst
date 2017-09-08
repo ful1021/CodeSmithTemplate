@@ -14,12 +14,11 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.IO" %>
 <%
-ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-Type assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-%>
-<%
 // 设定输出文件的顶级根目录
 if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
+
+ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+Type assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 {
     var currClassTemplateName = "Abp.Application";
     var currClasslibraryName = ProjectName + ".Application";
