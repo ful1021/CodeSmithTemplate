@@ -1,19 +1,19 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 
 <%@ Property Name="CacheEntity" Type="System.Boolean" Category="04.代码生成层" Description="生成缓存数据实现" 
-Default="true"%>
+Default="false"%>
 <%@ Property Name="CacheIEntity" Type="System.Boolean" Category="04.代码生成层" Description="生成缓存数据接口" 
-Default="true"%>
+Default="false"%>
 <%@ Property Name="CacheItem" Type="System.Boolean" Category="04.代码生成层" Description="生成缓存对象实体" 
-Default="true"%>
+Default="false"%>
 <%@ Property Name="AppDto" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务传输对象" 
 Default="true"%>
 <%@ Property Name="AppQueryDto" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务传输对象" 
 Default="true"%>
-<%@ Property Name="AppCreateDto" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务传输对象" 
-Default="true"%>
+<%--<%@ Property Name="AppCreateDto" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务传输对象" 
+Default="false"%>
 <%@ Property Name="AppUpdateDto" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务传输对象" 
-Default="true"%>
+Default="false"%>--%>
 <%@ Property Name="AppGetAllDto" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务传输对象" 
 Default="true"%>
 <%@ Property Name="AppAsyncService" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务" 
@@ -21,7 +21,7 @@ Default="true"%>
 <%@ Property Name="AppIAsyncService" Type="System.Boolean" Category="04.代码生成层" Description="生成应用服务契约" 
 Default="true"%>
 <%@ Property Name="VueSpaWeb" Type="System.Boolean" Category="04.代码生成层" Description="生成VueSpaWeb" 
-Default="true"%>
+Default="false"%>
 
 
 

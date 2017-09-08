@@ -14,7 +14,7 @@
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
 var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
-var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.QueryDtoName);
+var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.DtoName);
 var excelControllerName = "Wms/" + EntityName;
 %>
 <template>

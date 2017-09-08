@@ -17,9 +17,11 @@ var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var pk = "Id";
 var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
+var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, pk);
 %>
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
@@ -59,6 +61,18 @@ namespace <%=assType.Namespace %>
                 <%}%>
                 <%}%>
                 ;
+        }
+        
+        public Task<<%=names.QueryDtoName %>> CreateOrUpdate(<%=names.CreateOrUpdateInputName %> input)
+        {
+            if (input.Id == <%=pkDeaultValueString %>)
+            {
+                return Create(input);
+            }
+            else
+            {
+                return Update(input);
+            }
         }
     }
 }

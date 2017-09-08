@@ -14,7 +14,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         /// <returns></returns>
         public static Assembly GetAssembly(string dllFile)
         {
-            //byte[] filedata = File.ReadAllBytes(dllFile);
+            //byte[] filedata = System.IO.File.ReadAllBytes(dllFile);
             //Assembly assembly = Assembly.Load(filedata);
             //LoadFrom 会使文件 占用不释放
             Assembly assembly = Assembly.LoadFrom(dllFile);
@@ -60,6 +60,29 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             if (propInfo != null)
             {
                 return CommonCode.GetCSharpType(propInfo);
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// 得到反射字段 类型
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPropertyDefaultValueString(Type type, string propertyName = "Id")
+        {
+            var props = GetProperties(type);
+            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
+            if (propInfo != null)
+            {
+                var ctype = CommonCode.GetCSharpType(propInfo);
+                if (ctype.Equals("Guid", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return "Guid.Empty";
+                }
+                else
+                {
+                    return "0";
+                }
             }
             return "";
         }

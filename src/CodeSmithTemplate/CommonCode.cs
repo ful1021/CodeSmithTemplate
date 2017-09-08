@@ -865,47 +865,6 @@ namespace CodeSmithTemplate
         #endregion 生成文件
 
         /// <summary>
-        /// 复制文件夹
-        /// </summary>
-        /// <param name="srcDir"></param>
-        /// <param name="tgtDir"></param>
-        public static void CopyDirectory(string srcDir, string tgtDir)
-        {
-            DirectoryInfo source = new DirectoryInfo(srcDir);
-            DirectoryInfo target = new DirectoryInfo(tgtDir);
-
-            if (target.FullName.StartsWith(source.FullName, StringComparison.CurrentCultureIgnoreCase))
-            {
-                throw new Exception("父目录不能拷贝到子目录！");
-            }
-
-            if (!source.Exists)
-            {
-                return;
-            }
-
-            if (!target.Exists)
-            {
-                target.Create();
-            }
-
-            FileInfo[] files = source.GetFiles();
-
-            for (int i = 0; i < files.Length; i++)
-            {
-                File.Copy(files[i].FullName, target.FullName + @"\" + files[i].Name, true);
-            }
-
-            //如果取消注释，则复制子文件夹
-            //DirectoryInfo[] dirs = source.GetDirectories();
-
-            //for (int j = 0; j < dirs.Length; j++)
-            //{
-            //    CopyDirectory(dirs[j].FullName, target.FullName + @"\" + dirs[j].Name);
-            //}
-        }
-
-        /// <summary>
         /// 判断item是否存在list中
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -950,27 +909,17 @@ namespace CodeSmithTemplate
         /// </summary>
         public ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "")
         {
-            string tgtDir = "C:/temp/bin";
-            if (!Directory.Exists(tgtDir))
-            {
-                Directory.CreateDirectory(tgtDir);
-            }
-            //只有文件夹为空的时候，才复制
-            if (Directory.GetDirectories(tgtDir).Length <= 0 || Directory.GetFiles(tgtDir).Length <= 0)
-            {
-                CopyDirectory(dllFolder, tgtDir);
-            }
             return new ClassNames()
             {
                 AppServiceName = entityName + "MgmtAppService",
                 DtoName = entityName + "Dto",
                 QueryDtoName = entityName + "QueryDto",
                 GetAllInputName = entityName + "GetAllInput",
-                CreateOrUpdateInputName = entityName + "CreateOrUpdateInput",
-                CreateInputName = entityName + "CreateInput",
-                UpdateInputName = entityName + "UpdateInput",
-                ApplicationDllFile = Path.Combine(tgtDir, projectName + ".Application.dll"),
-                CoreDllFile = Path.Combine(tgtDir, projectName + ".Core.dll"),
+                CreateOrUpdateInputName = entityName + "Dto",//"CreateOrUpdateInput",
+                CreateInputName = entityName + "Dto",//"CreateInput",
+                UpdateInputName = entityName + "Dto",// "UpdateInput",
+                ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
+                CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
                 PermissionPrefix = permissionModuleName + "_" + entityName + "Management",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionModuleName + "_" + entityName
             };

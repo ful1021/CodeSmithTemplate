@@ -13,6 +13,8 @@
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var pk = "Id";
+var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
 %>
 using System;
 using System.Collections.Generic;
@@ -40,6 +42,13 @@ namespace <%=assType.Namespace %>
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<<%=names.QueryDtoName %>> Get(EntityDto<Guid> input);
+        Task<<%=names.QueryDtoName %>> Get(EntityDto<<%=pktype %>> input);        
+
+        /// <summary>
+        /// 创建或修改
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task<<%=names.QueryDtoName %>> CreateOrUpdate(<%=names.CreateOrUpdateInputName %> input);
     }
 }

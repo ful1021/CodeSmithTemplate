@@ -38,14 +38,13 @@ if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirector
     RenderToFile(AppGetAllDto, currClassTemplateName + "\\GetAllInput.cst", directory, names.GetAllInputName);
     RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, names.QueryDtoName);
     RenderToFile(AppDto, currClassTemplateName + "\\Dto.cst", directory, names.DtoName);
-    RenderToFile(AppCreateDto, currClassTemplateName + "\\CreateInput.cst", directory, names.CreateInputName);
-    RenderToFile(AppUpdateDto, currClassTemplateName + "\\UpdateInput.cst", directory, names.UpdateInputName);
 }
-//{
-//    var currClassTemplateName = "Abp.VueSpaWeb";
-//    var directory = OutputDirectory + "\\";;
-//    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  ToFirstLetterCamel(EntityName)+ ".vue");
-//}
+{
+    var currClassTemplateName = "Abp.VueSpaWeb";
+    var directory = OutputDirectory + "\\";;
+    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  ToFirstLetterCamel(EntityName)+ ".vue");
+}
 //指定使用资源管理器打开文件夹
 System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
+System.AppDomain.Unload(System.AppDomain.CurrentDomain);
 %>
