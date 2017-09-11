@@ -1,4 +1,4 @@
-﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
@@ -17,7 +17,13 @@ var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 %>
 
 
+//放到 Web目录  \App_Start\Navigation 目录，PageNames.cs 
 
+public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName %>";
+
+
+
+//放到 Web目录  \App_Start\Navigation 目录，SpaNavigationProvider.cs 
 
 .AddItem(new MenuItemDefinition(
         PageNames.App.<%=PermissionModuleName %>.<%=EntityName %>,
@@ -27,4 +33,13 @@ var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
         requiredPermissionName: <%=names.AppServicePermissionPrefix %>
     )
 )
+
+
+//放到 Core目录  \Authorization\Builders\Permissions 目录  xxx.json
+
+{
+"name": "<%=EntityName %>Management",
+"displayName": "<%=AssemblyFileHelper.GetClassSummary(assType) %>",
+"defaultPermission": true
+}
         

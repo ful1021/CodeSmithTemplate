@@ -1,5 +1,6 @@
 ﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Property Name="VueSpaWebBaseAppService" Type="System.Boolean" Category="03.生成配置" Description="如果true,则需要先生成AppService，再生成web" Default="false"%>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
@@ -15,15 +16,22 @@ var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionM
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 
+Dictionary<string, string> queryDtoColunms = null;
+Dictionary<string, string> getAllInputColunms = null;
+Dictionary<string, string> createOrUpdateInputColunms = null;
 
-var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
-var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
-var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
-
-
-//var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
-//var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
-//var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.DtoName);
+if(VueSpaWebBaseAppService)
+{
+    queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
+    getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
+    createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.DtoName);
+} 
+else 
+{    
+    queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
+    getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
+    createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
+}
 
 var excelControllerName = "Wms/" + EntityName;
 %>
@@ -47,7 +55,7 @@ var excelControllerName = "Wms/" + EntityName;
             </el-row>
         </el-form>
         <el-row class="division-border">
-            <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:<%=names.PermissionPrefix %>-Create>新增</el-button>
+            <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:<%=names.PermissionPrefix %>_Create>新增</el-button>
         </el-row>
         <el-row class="division-border">
             <div class="table-wrap-box">
@@ -56,7 +64,7 @@ var excelControllerName = "Wms/" + EntityName;
                     <el-table-column align="center" type="selection" width="50"></el-table-column>
                     <el-table-column align="center" width="100" label="操作">
                         <template scope="scope">
-                            <el-button type="text" @click.stop.prevent="editFormBtnHandler(scope.row.id)" v-permission:<%=names.PermissionPrefix %>-Edit>修改</el-button>
+                            <el-button type="text" @click.stop.prevent="editFormBtnHandler(scope.row.id)" v-permission:<%=names.PermissionPrefix %>_Edit>修改</el-button>
                         </template>
                     </el-table-column>
                     <%foreach(var col in queryDtoColunms) {%>
