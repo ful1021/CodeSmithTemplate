@@ -13,7 +13,7 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;

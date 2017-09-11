@@ -12,9 +12,8 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var pk = "Id";
-var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
+var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var pktype = GetPropertyType(assType, names.PkName);
 %>
 using System;
 using System.Collections.Generic;

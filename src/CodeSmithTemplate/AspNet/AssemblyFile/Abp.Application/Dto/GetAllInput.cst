@@ -13,8 +13,8 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = GetProperties(assType);
 var getAllInputColumns = DtoColumns(entityColumns);
 %>
 using System;
@@ -34,14 +34,14 @@ namespace <%=assType.Namespace %>.Dto
         /// </summary>
         public <%=names.GetAllInputName %>()
         {
-            Sorting = "CreationTime DESC";
+            <%if(true){%>Sorting = "CreationTime DESC";<%} %>
         }
         
         <%foreach (var col in getAllInputColumns){%>
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>
-        public <%=AssemblyFileHelper.GetCSharpNullType(col, true) %> <%=col.Name %> { get; set; }
+        public <%=GetCSharpNullType(col, true) %> <%=col.Name %> { get; set; }
         
         <%}%>
     }

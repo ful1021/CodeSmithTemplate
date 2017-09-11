@@ -549,6 +549,125 @@ namespace CodeSmithTemplate
 
         #endregion 基于Database
 
+        #region 基于Assembly
+
+        #region Assembly
+        /// <summary>
+        /// 根据dll文件，获取得到 Assembly
+        /// </summary>
+        /// <param name="dllFile"></param>
+        /// <returns></returns>
+        public static Assembly GetAssembly(string dllFile)
+        {
+            //byte[] filedata = System.IO.File.ReadAllBytes(dllFile);
+            //Assembly assembly = Assembly.Load(filedata);
+            //LoadFrom 会使文件 占用不释放
+            Assembly assembly = Assembly.LoadFrom(dllFile);
+            return assembly;
+        }
+
+        /// <summary>
+        /// 获取反射的Assembly 类型
+        /// </summary>
+        /// <param name="dllFile"></param>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public static Type GetAssemblyType(string dllFile, string className)
+        {
+            Assembly assembly = GetAssembly(dllFile);
+            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
+            return type;
+        }
+        #endregion
+
+        #region 列
+
+        /// <summary>
+        /// 反射获取PropertyInfo集合
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static PropertyInfo[] GetProperties(Type type)
+        {
+            if (type == null)
+            {
+                return new PropertyInfo[0];
+            }
+            PropertyInfo[] propertyinfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            return propertyinfo;
+        }
+
+        /// <summary>
+        /// 默认Dto列
+        /// </summary>
+        /// <param name="entityColumns"></param>
+        /// <returns></returns>
+        public List<PropertyInfo> DtoColumns(PropertyInfo[] entityColumns)
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in entityColumns)
+            {
+                if (IsIn(col.Name, "Id"))
+                {
+                    continue;
+                }
+                if (IsAbpCreationAudited(col))
+                {
+                    continue;
+                }
+                if (col.PropertyType.IsValueType || IsAbpValueObject(col))
+                {
+                    continue;
+                }
+                if (IsList(col))
+                {
+                    continue;
+                }
+                list.Add(col);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 得到反射字段 类型
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPropertyType(Type type, string propertyName = "Id")
+        {
+            var props = GetProperties(type);
+            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
+            if (propInfo != null)
+            {
+                return GetCSharpType(propInfo);
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// 得到反射字段 类型
+        /// </summary>
+        /// <returns></returns>
+        public static string GetPropertyDefaultValueString(Type type, string propertyName = "Id")
+        {
+            var props = GetProperties(type);
+            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
+            if (propInfo != null)
+            {
+                var ctype = GetCSharpType(propInfo);
+                if (ctype.Equals("Guid", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return "Guid.Empty";
+                }
+                else
+                {
+                    return "0";
+                }
+            }
+            return "";
+        }
+
+        #endregion 列
+
         #region 类型处理
 
         /// <summary>
@@ -631,7 +750,23 @@ namespace CodeSmithTemplate
             }
         }
 
+        public static string GetCSharpNullType(PropertyInfo prop, bool isCanNullable = false)
+        {
+            var propTypeFullName = prop.PropertyType.FullName;
+            var type = GetCSharpNullType(prop);
+            if (isCanNullable && type != "string" && !IsAbpValueObject(prop))
+            {
+                if (!type.EndsWith("?"))
+                {
+                    return type + "?";
+                }
+            }
+            return type;
+        }
+
         #endregion 类型处理
+
+        #endregion 基于Assembly
 
         #region 字符串扩展方法
 
@@ -864,6 +999,8 @@ namespace CodeSmithTemplate
 
         #endregion 生成文件
 
+        #region Helper方法
+
         /// <summary>
         /// 判断item是否存在list中
         /// </summary>
@@ -904,6 +1041,8 @@ namespace CodeSmithTemplate
             return IsIn(prop.Name, "CreatorUserId", "CreationTime", "LastModifierUserId", "LastModificationTime", "IsDeleted", "DeleterUserId", "DeletionTime");
         }
 
+        #endregion Helper方法
+
         /// <summary>
         /// 获取 AssemblyFile 各命名
         /// </summary>
@@ -912,6 +1051,7 @@ namespace CodeSmithTemplate
             var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
             return new ClassNames()
             {
+                PkName = "Id",
                 AppServiceName = entityName + "MgmtAppService",
                 DtoName = entityName + "Dto",
                 QueryDtoName = entityName + "QueryDto",
@@ -925,32 +1065,6 @@ namespace CodeSmithTemplate
                 VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
             };
-        }
-
-        public List<PropertyInfo> DtoColumns(PropertyInfo[] entityColumns)
-        {
-            List<PropertyInfo> list = new List<PropertyInfo>();
-            foreach (var col in entityColumns)
-            {
-                if (IsIn(col.Name, "Id"))
-                {
-                    continue;
-                }
-                if (IsAbpCreationAudited(col))
-                {
-                    continue;
-                }
-                if (col.PropertyType.IsValueType || IsAbpValueObject(col))
-                {
-                    continue;
-                }
-                if (IsList(col))
-                {
-                    continue;
-                }
-                list.Add(col);
-            }
-            return list;
         }
     }
 }

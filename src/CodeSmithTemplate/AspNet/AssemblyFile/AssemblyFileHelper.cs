@@ -7,90 +7,10 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
 {
     public static class AssemblyFileHelper
     {
-        /// <summary>
-        /// 根据dll文件，获取得到 Assembly
-        /// </summary>
-        /// <param name="dllFile"></param>
-        /// <returns></returns>
-        public static Assembly GetAssembly(string dllFile)
-        {
-            //byte[] filedata = System.IO.File.ReadAllBytes(dllFile);
-            //Assembly assembly = Assembly.Load(filedata);
-            //LoadFrom 会使文件 占用不释放
-            Assembly assembly = Assembly.LoadFrom(dllFile);
-            return assembly;
-        }
-
-        /// <summary>
-        /// 获取反射的Assembly 类型
-        /// </summary>
-        /// <param name="dllFile"></param>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public static Type GetAssemblyType(string dllFile, string className)
-        {
-            Assembly assembly = GetAssembly(dllFile);
-            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
-            return type;
-        }
-
-        /// <summary>
-        /// 反射获取PropertyInfo集合
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static PropertyInfo[] GetProperties(Type type)
-        {
-            if (type == null)
-            {
-                return new PropertyInfo[0];
-            }
-            PropertyInfo[] propertyinfo = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            return propertyinfo;
-        }
-
-        /// <summary>
-        /// 得到反射字段 类型
-        /// </summary>
-        /// <returns></returns>
-        public static string GetPropertyType(Type type, string propertyName = "Id")
-        {
-            var props = GetProperties(type);
-            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
-            if (propInfo != null)
-            {
-                return CommonCode.GetCSharpType(propInfo);
-            }
-            return "";
-        }
-
-        /// <summary>
-        /// 得到反射字段 类型
-        /// </summary>
-        /// <returns></returns>
-        public static string GetPropertyDefaultValueString(Type type, string propertyName = "Id")
-        {
-            var props = GetProperties(type);
-            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
-            if (propInfo != null)
-            {
-                var ctype = CommonCode.GetCSharpType(propInfo);
-                if (ctype.Equals("Guid", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return "Guid.Empty";
-                }
-                else
-                {
-                    return "0";
-                }
-            }
-            return "";
-        }
-
         public static Dictionary<string, string> GetPropertiesSummary(string dllFile, string className, bool isFirstLetterCamel = true)
         {
-            var type = GetAssemblyType(dllFile, className);
-            var props = GetProperties(type).ToList();
+            var type = CommonCode.GetAssemblyType(dllFile, className);
+            var props = CommonCode.GetProperties(type).ToList();
             return GetPropertiesSummary(props, isFirstLetterCamel);
         }
 
@@ -155,20 +75,6 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 }
             }
             return "";
-        }
-
-        public static string GetCSharpNullType(PropertyInfo prop, bool isCanNullable = false)
-        {
-            var propTypeFullName = prop.PropertyType.FullName;
-            var type = CommonCode.GetCSharpNullType(prop);
-            if (isCanNullable && type != "string" && !CommonCode.IsAbpValueObject(prop))
-            {
-                if (!type.EndsWith("?"))
-                {
-                    return type + "?";
-                }
-            }
-            return type;
         }
     }
 }

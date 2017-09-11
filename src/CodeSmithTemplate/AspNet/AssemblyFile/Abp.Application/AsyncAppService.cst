@@ -13,11 +13,10 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var pk = "Id";
-var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
-var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, pk);
+var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = GetProperties(assType);
+var pktype = GetPropertyType(assType, names.PkName);
+var pkDeaultValueString = GetPropertyDefaultValueString(assType, names.PkName);
 %>
 using System;
 using System.Linq;
@@ -56,7 +55,7 @@ namespace <%=assType.Namespace %>
                 <%if(IsAbpCreationAudited(col)){continue;} %>
                 <%if(col.PropertyType.IsValueType || IsAbpValueObject(col)){continue;} %>
                 <%if(IsList(col)){continue;} %>
-                <%if(AssemblyFileHelper.GetCSharpNullType(col, true)=="string"){ %>
+                <%if(GetCSharpNullType(col, true)=="string"){ %>
                 .WhereIf(input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %> == input.<%=col.Name %>)
                 <%}%>
                 <%}%>

@@ -18,7 +18,7 @@
 if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
 
 ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-Type assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+Type assType = GetAssemblyType(names.CoreDllFile, EntityName);
 {
     var currClassTemplateName = "Abp.Application";
     var currClasslibraryName = ProjectName + ".Application";

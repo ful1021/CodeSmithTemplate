@@ -8,6 +8,7 @@ namespace CodeSmithTemplate
 {
     public class ClassNames
     {
+        public string PkName { get; set; }
         public string AppServiceName { get; set; }
         public string GetAllInputName { get; set; }
         public string DtoName { get; set; }

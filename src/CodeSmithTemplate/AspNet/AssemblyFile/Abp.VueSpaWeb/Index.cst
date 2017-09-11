@@ -13,8 +13,8 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = GetProperties(assType);
 
 Dictionary<string, string> queryDtoColunms = null;
 Dictionary<string, string> getAllInputColunms = null;
@@ -34,6 +34,7 @@ else
 }
 
 var excelControllerName = "Wms/" + EntityName;
+var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService","");
 %>
 <template>
     <div class="content">
@@ -94,7 +95,7 @@ var excelControllerName = "Wms/" + EntityName;
         </el-row>
         <el-dialog title="新增/编辑" :visible.sync="createOrUpdateModelDialog" :show-close="true" @close="createOrUpdateModelDialogCloseCallback">
             <div class="form-wrap-box">
-                <el-form label-position="left" :model="createOrUpdateModel" ref="createOrUpdateFormForm" label-width="100px">
+                <el-form label-position="left" :model="createOrUpdateModel" ref="createOrUpdateForm" label-width="100px">
                     <%foreach(var col in createOrUpdateInputColunms) {%>
                     <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
                     <el-form-item prop="<%=col.Key %>" label="<%=col.Value %>" :rules="{ required: true, message: '请输入<%=col.Value %>', trigger: 'blur' }">
@@ -122,7 +123,6 @@ var excelControllerName = "Wms/" + EntityName;
         <%=col.Key %>:"",
         <%} %>
 	};
-	let appService = site.api.services.app.<%=ToFirstLetterCamel(names.AppServiceName) %>;
     export default {
 		data() {
 			return {
@@ -138,7 +138,7 @@ var excelControllerName = "Wms/" + EntityName;
 				this.queryList();
 			},
 			queryList() {
-				this.getAll(appService);
+				this.getAll(site.api.services.app.<%=jsAppService %>);
 			},
             
             
@@ -151,7 +151,7 @@ var excelControllerName = "Wms/" + EntityName;
 			},
 			//新增或者修改保存事件
 			createOrUpdateFormSaveBtnHandler() {
-				this.formSaveBtnHandler(appService, this.createOrUpdateModel, result => {
+				this.formSaveBtnHandler(site.api.services.app.<%=jsAppService %>, this.createOrUpdateModel, result => {
 					this.createOrUpdateModel = resetCreateForm;
 					this.createOrUpdateModelDialog = false;
 				});
@@ -161,7 +161,7 @@ var excelControllerName = "Wms/" + EntityName;
                     this.$toastr.warning('无法获取Id');
                 }
                 this.createOrUpdateModelDialog = true;
-                appService.get({ id: id }).then((result) => {
+                site.api.services.app.<%=jsAppService %>.get({ id: id }).then((result) => {
                     this.createOrUpdateModel = result;
                 });
             },
@@ -174,7 +174,7 @@ var excelControllerName = "Wms/" + EntityName;
 				this.uploadFileSetting.loading = true;
 			},
 			onUploadExcelSuccess(response, file, fileList) {
-				this.onUploadFileSuccess(appService, response);
+				this.onUploadFileSuccess(site.api.services.app.<%=jsAppService %>, response);
 			},
 			onUploadExcelError(err, file, fileList) {
 				this.onUploadFileError(err);

@@ -13,10 +13,9 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var pk = "Id";
-var pktype = AssemblyFileHelper.GetPropertyType(assType, pk);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var pktype = GetPropertyType(assType, names.PkName);
+var entityColumns = GetProperties(assType);
 var dtoColumns = DtoColumns(entityColumns);
 %>
 using System;
