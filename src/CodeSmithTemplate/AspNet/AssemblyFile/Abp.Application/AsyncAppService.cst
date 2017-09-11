@@ -50,13 +50,14 @@ namespace <%=assType.Namespace %>
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
         {
             return base.CreateFilteredQuery(input)
+                //.WhereIf(!input.Filter.IsNullOrWhiteSpace(), a => a.Code.Contains(input.Filter) || a.Name.Contains(input.Filter))
                 <%foreach (var col in entityColumns){%>
                 <%if(IsIn(col.Name,"Id")){continue;} %>
                 <%if(IsAbpCreationAudited(col)){continue;} %>
                 <%if(col.PropertyType.IsValueType || IsAbpValueObject(col)){continue;} %>
                 <%if(IsList(col)){continue;} %>
                 <%if(GetCSharpNullType(col, true)=="string"){ %>
-                .WhereIf(input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %> == input.<%=col.Name %>)
+                .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <%}%>
                 <%}%>
                 ;
