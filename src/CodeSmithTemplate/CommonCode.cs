@@ -552,6 +552,7 @@ namespace CodeSmithTemplate
         #region 基于Assembly
 
         #region Assembly
+
         /// <summary>
         /// 根据dll文件，获取得到 Assembly
         /// </summary>
@@ -578,7 +579,8 @@ namespace CodeSmithTemplate
             var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
             return type;
         }
-        #endregion
+
+        #endregion Assembly
 
         #region 列
 
