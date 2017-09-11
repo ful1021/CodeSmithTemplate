@@ -63,82 +63,6 @@ namespace CodeSmithTemplate
 
         #region 基于Database
 
-        #region 处理列
-
-        /// <summary>
-        /// 判断当前列，是否名字为参数name
-        /// </summary>
-        /// <param name="col"></param>
-        /// <param name="name">列名字字符串</param>
-        /// <returns></returns>
-        public bool IsEqualsCol(ColumnSchema col, string name)
-        {
-            return col.Name.ToLower().Trim().Equals(name.Trim(), StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// 判断当前列，是否名字为参数name，在C#中的类型是否为参数type
-        /// </summary>
-        /// <param name="col"></param>
-        /// <param name="name">列名字字符串</param>
-        /// <param name="type">列在C#中的类型字符串</param>
-        /// <returns></returns>
-        public bool IsEqualsCol(ColumnSchema col, string name, string type)
-        {
-            return col.Name.ToLower().Trim().Equals(name.Trim(), StringComparison.OrdinalIgnoreCase) && GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// 判断当前表，是否存在列name
-        /// </summary>
-        /// <param name="tab"></param>
-        /// <param name="name">列名字字符串</param>
-        /// <param name="ignoreCase">是否忽略大小写</param>
-        /// <param name="type">列在C#中的类型字符串</param>
-        /// <returns></returns>
-        public bool IsExistsCol(TableSchema tab, string name, bool ignoreCase = false, string type = null)
-        {
-            var b = false;
-            foreach (var col in tab.Columns)
-            {
-                if (ignoreCase)
-                {
-                    if (col.Name.Trim().ToLower() == name.Trim().ToLower())
-                    {
-                        b = true;
-                    }
-                }
-                else
-                {
-                    if (col.Name.Trim() == name.Trim())
-                    {
-                        b = true;
-                    }
-                }
-                if (b && !string.IsNullOrWhiteSpace(type))
-                {
-                    b = GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
-                }
-                if (b)
-                {
-                    break;
-                }
-            }
-            return b;
-        }
-
-        /// <summary>
-        /// 是否为标识符，不支持Access
-        /// </summary>
-        /// <param name="col"></param>
-        /// <returns></returns>
-        public bool IsIdentity(ColumnSchema col)
-        {
-            return (bool)col.ExtendedProperties["CS_IsIdentity"].Value;
-        }
-
-        #endregion 处理列
-
         #region 处理Table
 
         /// <summary>
@@ -211,6 +135,76 @@ namespace CodeSmithTemplate
         }
 
         #endregion 处理主键
+
+        #region 处理列
+
+        /// <summary>
+        /// 判断当前列，是否名字为参数name，在C#中的类型是否为参数type
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="name">列名字字符串</param>
+        /// <param name="type">列在C#中的类型字符串</param>
+        /// <returns></returns>
+        public bool IsEqualsCol(ColumnSchema col, string name, string type = null)
+        {
+            var nameEqual = col.Name.Trim().Equals(name.Trim(), StringComparison.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                return nameEqual;
+            }
+            return nameEqual && GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 判断当前表，是否存在列name
+        /// </summary>
+        /// <param name="tab"></param>
+        /// <param name="name">列名字字符串</param>
+        /// <param name="ignoreCase">是否忽略大小写</param>
+        /// <param name="type">列在C#中的类型字符串</param>
+        /// <returns></returns>
+        public bool IsExistsCol(TableSchema tab, string name, bool ignoreCase = false, string type = null)
+        {
+            var b = false;
+            foreach (var col in tab.Columns)
+            {
+                if (ignoreCase)
+                {
+                    if (col.Name.Trim().ToLower() == name.Trim().ToLower())
+                    {
+                        b = true;
+                    }
+                }
+                else
+                {
+                    if (col.Name.Trim() == name.Trim())
+                    {
+                        b = true;
+                    }
+                }
+                if (b && !string.IsNullOrWhiteSpace(type))
+                {
+                    b = GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+                }
+                if (b)
+                {
+                    break;
+                }
+            }
+            return b;
+        }
+
+        /// <summary>
+        /// 是否为标识符，不支持Access
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public bool IsIdentity(ColumnSchema col)
+        {
+            return (bool)col.ExtendedProperties["CS_IsIdentity"].Value;
+        }
+
+        #endregion 处理列
 
         #region 类型处理
 
@@ -666,6 +660,45 @@ namespace CodeSmithTemplate
                 }
             }
             return "";
+        }
+
+        /// <summary>
+        /// 判断当前表，是否存在列name
+        /// </summary>
+        /// <param name="tab"></param>
+        /// <param name="name">列名字字符串</param>
+        /// <param name="ignoreCase">是否忽略大小写</param>
+        /// <param name="type">列在C#中的类型字符串</param>
+        /// <returns></returns>
+        public bool IsExistsCol(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
+        {
+            var b = false;
+            foreach (var col in entityColumns)
+            {
+                if (ignoreCase)
+                {
+                    if (col.Name.Trim().ToLower() == name.Trim().ToLower())
+                    {
+                        b = true;
+                    }
+                }
+                else
+                {
+                    if (col.Name.Trim() == name.Trim())
+                    {
+                        b = true;
+                    }
+                }
+                if (b && !string.IsNullOrWhiteSpace(type))
+                {
+                    b = GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+                }
+                if (b)
+                {
+                    break;
+                }
+            }
+            return b;
         }
 
         #endregion 列

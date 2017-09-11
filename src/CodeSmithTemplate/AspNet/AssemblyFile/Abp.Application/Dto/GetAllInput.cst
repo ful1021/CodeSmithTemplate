@@ -34,7 +34,7 @@ namespace <%=assType.Namespace %>.Dto
         /// </summary>
         public <%=names.GetAllInputName %>()
         {
-            <%if(true){%>Sorting = "CreationTime DESC";<%} %>
+            <%if(IsExistsCol(entityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
         }
         
         <%foreach (var col in getAllInputColumns){%>
