@@ -922,6 +922,7 @@ namespace CodeSmithTemplate
                 ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
                 CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
                 PermissionPrefix = permissionPrefix,
+                VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
             };
         }
