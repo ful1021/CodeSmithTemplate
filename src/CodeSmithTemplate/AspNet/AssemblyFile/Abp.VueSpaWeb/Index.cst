@@ -57,17 +57,14 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
         </el-form>
         <el-row class="division-border">
             <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:<%=names.VueWebPermissionPrefix %>-Create>新增</el-button>
+			<el-button @click="preEdit" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>编辑</el-button>
+			<el-button @click="preBatchDelete(deleteHandle)" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
         </el-row>
         <el-row class="division-border">
             <div class="table-wrap-box">
                 <el-table stripe ref="listTable" :data="tableData" border style="width: 100%" @row-click="handleRowClick" @select-all="handleSelectAll"
                     :row-class-name="rowClassName">
                     <el-table-column align="center" type="selection" width="50"></el-table-column>
-                    <el-table-column align="center" width="100" label="操作">
-                        <template scope="scope">
-                            <el-button type="text" @click.stop.prevent="updateFormBtnHandler(scope.row.id)" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>修改</el-button>
-                        </template>
-                    </el-table-column>
                     <%foreach(var col in queryDtoColunms) {%>
                     <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
                     <%if(IsIn(col.Key.ToLower(), "creationtime","lastmodificationtime")){ %>
@@ -93,7 +90,7 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                 :total="pagination.total">
             </el-pagination>
         </el-row>
-        <el-dialog title="新增/编辑" :visible.sync="createOrUpdateModelDialog" :show-close="true" @close="createOrUpdateModelDialogCloseCallback">
+        <el-dialog title="新增/编辑" :visible.sync="createOrUpdateModelDialog" :show-close="true" @close="createOrUpdateModelDialogClose">
             <div class="form-wrap-box">
                 <el-form label-position="left" :model="createOrUpdateModel" ref="createOrUpdateForm" label-width="100px">
                     <%foreach(var col in createOrUpdateInputColunms) {%>
@@ -104,8 +101,8 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                     <%} %>
                 </el-form>
                 <span slot="footer" style="float:right;">
-                    <el-button @click="createOrUpdateModelDialogCloseCallback">取 消</el-button>
-                    <el-button type="primary" @click="createOrUpdateFormSaveBtnHandler">保 存</el-button>
+                    <el-button @click="createOrUpdateModelDialogClose">取 消</el-button>
+                    <el-button type="primary" @click="defaultCreateOrUpdate">保 存</el-button>
                 </span>
             </div>
         </el-dialog>
@@ -117,6 +114,7 @@ let resetCreateForm = {
     <%=col.Key %>:"",
     <%} %>
 };	
+let appService = site.api.services.app.<%=jsAppService %>;
 export default {
 	data() {
 		return {
@@ -126,33 +124,18 @@ export default {
                 <%=col.Key %> : "",
                 <%} %>
         	},
+            
+			queryListHandler: appService.getAll,
+			getHandler: appService.get,
+			createOrUpdateHandle: appService.createOrUpdate,
+			deleteHandle: appService.delete,
+            
 			initCreateOrUpdateModel: resetCreateForm,
 			createOrUpdateModel: resetCreateForm,
 			uploadAction: site.Config.webapiDomain + '<%=excelControllerName %>/ImportExcel'
 		};
 	},
     methods: {
-		init() {
-			this.queryList();
-		},
-		queryList() {
-			this.getAll(site.api.services.app.<%=jsAppService %>);
-		},
-        
-        
-		//新增或者修改弹框关闭事件
-		createOrUpdateModelDialogCloseCallback() {
-			this.fromModelDialogCloseCallback();
-		},
-		//新增或者修改保存事件
-		createOrUpdateFormSaveBtnHandler() {
-			this.formSaveBtnHandler(site.api.services.app.<%=jsAppService %>);
-		},
-		//修改显示弹窗事件
-		updateFormBtnHandler(id) {
-			this.fromEditBtnHandler(site.api.services.app.<%=jsAppService %>, id);
-		},
-        
 		//导入  
 		downloadImporTemplate() {
 			site.utils.downloadFileIframe('<%=excelControllerName %>/DownloadImporTemplate');

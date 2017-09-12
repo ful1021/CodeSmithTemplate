@@ -49,5 +49,12 @@ namespace <%=assType.Namespace %>
         /// <param name="input"></param>
         /// <returns></returns>
         Task<<%=names.QueryDtoName %>> CreateOrUpdate(<%=names.CreateOrUpdateInputName %> input);
+        
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task Delete(EntityDto<<%=pktype %>> input);
     }
 }
