@@ -49,7 +49,7 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                 <%if(IsIn(col.Key.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
 				<el-col :span="5" :xs="24">
                     <el-form-item label="<%=col.Value %>">
-                        <el-input size="small" v-model="searchInfo.<%=col.Key %>" @keyup.native.enter="filters.<%=col.Key %> = searchInfo.<%=col.Key %>" @change.native="filters.<%=col.Key %> = searchInfo.<%=col.Key %>" placeholder="<%=col.Value %>"></el-input>
+                        <q-input v-model="filters.<%=col.Key %>" placeholder="<%=col.Value %>"></q-input>
                     </el-form-item>
                 </el-col>
                 <%} %>
@@ -65,7 +65,7 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                     <el-table-column align="center" type="selection" width="50"></el-table-column>
                     <el-table-column align="center" width="100" label="操作">
                         <template scope="scope">
-                            <el-button type="text" @click.stop.prevent="editFormBtnHandler(scope.row.id)" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>修改</el-button>
+                            <el-button type="text" @click.stop.prevent="updateFormBtnHandler(scope.row.id)" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>修改</el-button>
                         </template>
                     </el-table-column>
                     <%foreach(var col in queryDtoColunms) {%>
@@ -112,79 +112,66 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
     </div>
 </template>
 <script>
-	let resetCreateForm = {		
-        <%foreach(var col in createOrUpdateInputColunms){ %>
-        <%=col.Key %>:"",
-        <%} %>
-	};
-	let initFilters = {
-        <%foreach(var col in getAllInputColunms){ %>
-        <%if(IsIn(col.Key.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
-        <%=col.Key %>:"",
-        <%} %>
-	};
-    export default {
-		data() {
-			return {
-				filters: initFilters,
-				searchInfo: initFilters,
-				createOrUpdateModelDialog: false,
-				createOrUpdateModel: resetCreateForm,
-				uploadAction: site.Config.webapiDomain + '<%=excelControllerName %>/ImportExcel'
-			};
+let resetCreateForm = {		
+    <%foreach(var col in createOrUpdateInputColunms){ %>
+    <%=col.Key %>:"",
+    <%} %>
+};	
+export default {
+	data() {
+		return {
+			filters: {
+                <%foreach(var col in getAllInputColunms){ %>
+                <%if(IsIn(col.Key.ToLower(), "maxresultcount","sorting","skipcount","filter")){continue;} %>
+                <%=col.Key %> : "",
+                <%} %>
+        	},
+			initCreateOrUpdateModel: resetCreateForm,
+			createOrUpdateModel: resetCreateForm,
+			uploadAction: site.Config.webapiDomain + '<%=excelControllerName %>/ImportExcel'
+		};
+	},
+    methods: {
+		init() {
+			this.queryList();
 		},
-        methods: {
-			init() {
-				this.queryList();
-			},
-			queryList() {
-				this.getAll(site.api.services.app.<%=jsAppService %>);
-			},
-            
-            
-			//新增弹框关闭事件
-			createOrUpdateModelDialogCloseCallback() {
-				this.fromModelDialogCloseCallback(() => {
-					this.createOrUpdateModel = resetCreateForm;
-					this.createOrUpdateModelDialog = false;
-				});
-			},
-			//新增或者修改保存事件
-			createOrUpdateFormSaveBtnHandler() {
-				this.formSaveBtnHandler(site.api.services.app.<%=jsAppService %>, this.createOrUpdateModel, result => {
-					this.createOrUpdateModel = resetCreateForm;
-					this.createOrUpdateModelDialog = false;
-				});
-			},
-            editFormBtnHandler(id) {
-                if (id <= 0) {
-                    this.$toastr.warning('无法获取Id');
-                }
-                this.createOrUpdateModelDialog = true;
-                site.api.services.app.<%=jsAppService %>.get({ id: id }).then((result) => {
-                    this.createOrUpdateModel = result;
-                });
-            },
-            
-			//导入  
-			downloadImporTemplate() {
-				site.utils.downloadFileIframe('<%=excelControllerName %>/DownloadImporTemplate');
-			},
-			beforeUploadExcel(file) {
-				this.uploadFileSetting.loading = true;
-			},
-			onUploadExcelSuccess(response, file, fileList) {
-				this.onUploadFileSuccess(site.api.services.app.<%=jsAppService %>, response);
-			},
-			onUploadExcelError(err, file, fileList) {
-				this.onUploadFileError(err);
-			},
-            
-            //导出
-			exportExcel() {
-				site.utils.downloadFileIframe('<%=excelControllerName %>/ExportExcel?' + site.utils.json2get(this.filters));
-			}
-            
-        }
+		queryList() {
+			this.getAll(site.api.services.app.<%=jsAppService %>);
+		},
+        
+        
+		//新增或者修改弹框关闭事件
+		createOrUpdateModelDialogCloseCallback() {
+			this.fromModelDialogCloseCallback();
+		},
+		//新增或者修改保存事件
+		createOrUpdateFormSaveBtnHandler() {
+			this.formSaveBtnHandler(site.api.services.app.<%=jsAppService %>);
+		},
+		//修改显示弹窗事件
+		updateFormBtnHandler(id) {
+			this.fromEditBtnHandler(site.api.services.app.<%=jsAppService %>, id);
+		},
+        
+		//导入  
+		downloadImporTemplate() {
+			site.utils.downloadFileIframe('<%=excelControllerName %>/DownloadImporTemplate');
+		},
+		beforeUploadExcel(file) {
+			this.uploadFileSetting.loading = true;
+		},
+		onUploadExcelSuccess(response, file, fileList) {
+			this.onUploadFileSuccess(site.api.services.app.<%=jsAppService %>, response);
+		},
+		onUploadExcelError(err, file, fileList) {
+			this.onUploadFileError(err);
+		},
+        
+        //导出
+		exportExcel() {
+			site.utils.downloadFileIframe('<%=excelControllerName %>/ExportExcel?' + site.utils.json2get(this.filters));
+		}
+        
     }
+}
 </script>
