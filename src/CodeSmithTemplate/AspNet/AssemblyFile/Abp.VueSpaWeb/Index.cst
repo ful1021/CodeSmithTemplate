@@ -1,6 +1,6 @@
 ﻿<%@ Template Language="C#" TargetLanguage="HTML" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
-<%@ Property Name="VueSpaWebBaseAppService" Type="System.Boolean" Category="03.生成配置" Description="如果true,则需要先生成AppService，再生成web" Default="false"%>
+<%@ Property Name="VueSpaWebBaseAppService" Type="System.Boolean" Category="03.生成配置" Description="如果true,则需要先生成AppService，再生成web" Default="true"%>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
@@ -56,9 +56,14 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
             </el-row>
         </el-form>
         <el-row class="division-border">
-            <el-button @click="createOrUpdateModelDialog = true" type="primary" v-permission:<%=names.VueWebPermissionPrefix %>-Create>新增</el-button>
-			<el-button @click="preEdit" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>编辑</el-button>
-			<el-button @click="preBatchDelete(deleteHandle)" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
+            <el-button @click="createOrUpdateDialog.isShow = true" type="primary" v-permission:<%=names.VueWebPermissionPrefix %>-Create>新增</el-button>
+			<el-button @click="preEdit(appService.get)" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>编辑</el-button>
+			<el-button @click="preBatchDelete(appService.delete)" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
+            <el-button @click="exportExcel">导出库存</el-button>
+			<el-button @click="downloadImporTemplate">下载模板</el-button>
+			<el-upload id="uploadExcel" style="margin-left:10px;display:inline" :headers="uploadFileSetting.headers" :action="uploadAction" :before-upload="beforeUploadExcel" :on-success="onUploadExcelSuccess" :on-error="onUploadExcelError" :show-file-list="false" accept=".xlsx">
+				<el-button type="primary" v-loading.fullscreen.lock="uploadFileSetting.loading" element-loading-text="导入中，请耐心等待！">导入修改</el-button>
+			</el-upload>
         </el-row>
         <el-row class="division-border">
             <div class="table-wrap-box">
@@ -86,23 +91,23 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                 </el-table>
             </div>
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pagination.currentPage"
-                :page-sizes="[10, 25, 50,100]" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper"
+                :page-sizes="pagination.pagesizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper"
                 :total="pagination.total">
             </el-pagination>
         </el-row>
-        <el-dialog title="新增/编辑" :visible.sync="createOrUpdateModelDialog" :show-close="true" @close="createOrUpdateModelDialogClose">
+        <el-dialog title="新增/编辑" :visible.sync="createOrUpdateDialog.isShow" :show-close="true" @close="closeDialog(createOrUpdateDialog)">
             <div class="form-wrap-box">
-                <el-form label-position="left" :model="createOrUpdateModel" ref="createOrUpdateForm" label-width="100px">
+                <el-form label-position="left" :model="createOrUpdateDialog.model" ref="createOrUpdateForm" label-width="100px">
                     <%foreach(var col in createOrUpdateInputColunms) {%>
                     <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
                     <el-form-item prop="<%=col.Key %>" label="<%=col.Value %>" :rules="{ required: true, message: '请输入<%=col.Value %>', trigger: 'blur' }">
-                        <el-input v-model="createOrUpdateModel.<%=col.Key %>"></el-input>
+                        <el-input v-model="createOrUpdateDialog.model.<%=col.Key %>"></el-input>
                     </el-form-item>
                     <%} %>
                 </el-form>
                 <span slot="footer" style="float:right;">
-                    <el-button @click="createOrUpdateModelDialogClose">取 消</el-button>
-                    <el-button type="primary" @click="defaultCreateOrUpdate">保 存</el-button>
+                    <el-button @click="closeDialog(createOrUpdateDialog)">取 消</el-button>
+                    <el-button type="primary" @click="saveDialogForm(createOrUpdateDialog)">保 存</el-button>
                 </span>
             </div>
         </el-dialog>
@@ -125,13 +130,15 @@ export default {
                 <%} %>
         	},
             
+            appService: appService,
 			queryListHandler: appService.getAll,
-			getHandler: appService.get,
-			createOrUpdateHandle: appService.createOrUpdate,
-			deleteHandle: appService.delete,
             
-			initCreateOrUpdateModel: resetCreateForm,
-			createOrUpdateModel: resetCreateForm,
+			createOrUpdateDialog: {
+				saveHandle: appService.createOrUpdate,
+				initModel: resetCreateForm,
+				model: resetCreateForm
+			},
+            
 			uploadAction: site.Config.webapiDomain + '<%=excelControllerName %>/ImportExcel'
 		};
 	},
