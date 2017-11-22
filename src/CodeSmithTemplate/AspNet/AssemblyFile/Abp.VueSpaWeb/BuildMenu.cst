@@ -23,6 +23,16 @@ public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName
 
 
 
+//放到 Core目录  \Authorization\Builders\Permissions 目录  xxx.json
+
+{
+"name": "<%=EntityName %>Management",
+"displayName": "<%=AssemblyFileHelper.GetClassSummary(assType) %>",
+"defaultPermission": true
+}
+        
+        
+        
 //放到 Web目录  \App_Start\Navigation 目录，SpaNavigationProvider.cs 
 
 .AddItem(new MenuItemDefinition(
@@ -33,13 +43,3 @@ public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName
         requiredPermissionName: <%=names.AppServicePermissionPrefix %>
     )
 )
-
-
-//放到 Core目录  \Authorization\Builders\Permissions 目录  xxx.json
-
-{
-"name": "<%=EntityName %>Management",
-"displayName": "<%=AssemblyFileHelper.GetClassSummary(assType) %>",
-"defaultPermission": true
-}
-        

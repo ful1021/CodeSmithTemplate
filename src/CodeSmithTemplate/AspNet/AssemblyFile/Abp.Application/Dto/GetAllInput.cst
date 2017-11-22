@@ -15,7 +15,7 @@
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = GetProperties(assType);
-var getAllInputColumns = DtoColumns(entityColumns);
+var getAllInputColumns = GetAllInputColumns(entityColumns);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -37,10 +37,13 @@ namespace <%=assType.Namespace %>.Dto
             <%if(IsExistsCol(entityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
         }
         
-        <%foreach (var col in getAllInputColumns){%>
+        <%foreach (var col in getAllInputColumns){%>        
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
-        /// </summary>
+        /// </summary>       
+        <%if(GetCSharpNullType(col,true)=="DateTime?"){ %>
+        public DateTime[] <%=col.Name %> { get; set; }
+        <% continue;}%>
         public <%=GetCSharpNullType(col, true) %> <%=col.Name %> { get; set; }
         
         <%}%>

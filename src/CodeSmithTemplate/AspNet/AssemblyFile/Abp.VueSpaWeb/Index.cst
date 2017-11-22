@@ -29,7 +29,7 @@ if(VueSpaWebBaseAppService)
 else 
 {    
     queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
-    getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
+    getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(GetAllInputColumns(entityColumns));
     createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
 }
 

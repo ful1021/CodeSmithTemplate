@@ -611,11 +611,27 @@ namespace CodeSmithTemplate
                 {
                     continue;
                 }
-                if (col.PropertyType.IsValueType || IsAbpValueObject(col))
+                if (IsList(col))
                 {
                     continue;
                 }
-                if (IsList(col))
+                list.Add(col);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// GetAllInput 输入参数 列
+        /// </summary>
+        /// <param name="entityColumns"></param>
+        /// <returns></returns>
+        public List<PropertyInfo> GetAllInputColumns(PropertyInfo[] entityColumns)
+        {
+            var dtos = DtoColumns(entityColumns);
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in dtos)
+            {
+                if (IsAbpValueObject(col))
                 {
                     continue;
                 }
@@ -1067,8 +1083,15 @@ namespace CodeSmithTemplate
 
         public static bool IsAbpValueObject(PropertyInfo prop)
         {
-            var fullType = prop.PropertyType.FullName;
-            return fullType.Contains("Abp.Domain.Values.ValueObject");
+            var fullType = prop.PropertyType.BaseType;
+            if (fullType != null)
+            {
+                if (!string.IsNullOrWhiteSpace(fullType.FullName))
+                {
+                    return fullType.FullName.Contains("Abp.Domain.Values.ValueObject");
+                }
+            }
+            return false;
         }
 
         public static bool IsAbpCreationAudited(PropertyInfo prop)
