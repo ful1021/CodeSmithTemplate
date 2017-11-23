@@ -1,5 +1,6 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Register Template="../Helper/GenerateConfigProperty.cst" Name="GenerateConfigProperty" MergeProperties="True" %> 
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
@@ -11,10 +12,12 @@
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName, VueSpaWebPageName);
 var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 
 %>
+
+
 
 
 //放到 Web目录  \App_Start\Navigation 目录，PageNames.cs 
@@ -38,8 +41,24 @@ public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName
 .AddItem(new MenuItemDefinition(
         PageNames.App.<%=PermissionModuleName %>.<%=EntityName %>,
         new FixedLocalizableString("<%=AssemblyFileHelper.GetClassSummary(assType) %>"),
-        url: "/goodes/<%=ToCamel(EntityName) %>",
+        url: "/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>",
         icon: "icon-nutrients-management",
         requiredPermissionName: <%=names.AppServicePermissionPrefix %>
     )
 )
+
+
+
+//放到前端  routers.js
+
+{
+
+	path: '/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>',
+	name: "<%=names.VueWebPageName %>",
+	meta: {
+		title: "<%=AssemblyFileHelper.GetClassSummary(assType) %>"
+	},
+	component: resolve => require(['../views/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>.vue'], function (component) {
+		resolve(modules.createQueryVueModule(component));
+	})
+}, 

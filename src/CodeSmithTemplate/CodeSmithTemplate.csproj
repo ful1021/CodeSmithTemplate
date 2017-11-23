@@ -67,6 +67,7 @@
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\Index.cst" />
     <None Include="AspNet\AssemblyFile\Builder.cst" />
     <None Include="AspNet\AssemblyFile\Helper\AssemblyFileProperty.cst" />
+    <None Include="AspNet\AssemblyFile\Helper\GenerateConfigProperty.cst" />
     <None Include="AspNet\AssemblyFile\Helper\GenerateLayerProperty.cst" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

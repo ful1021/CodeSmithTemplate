@@ -1,6 +1,7 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
-<%@ Register Template="Helper/GenerateLayerProperty.cst" Name="GenerateLayerProperty" MergeProperties="True" %>  
+<%@ Register Template="Helper/GenerateLayerProperty.cst" Name="GenerateLayerProperty" MergeProperties="True" %> 
+<%@ Register Template="Helper/GenerateConfigProperty.cst" Name="GenerateConfigProperty" MergeProperties="True" %> 
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
@@ -17,7 +18,7 @@
 // 设定输出文件的顶级根目录
 if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
 
-ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName,VueSpaWebPageName);
 Type assType = GetAssemblyType(names.CoreDllFile, EntityName);
 {
     var currClassTemplateName = "Abp.Application";
@@ -40,10 +41,14 @@ Type assType = GetAssemblyType(names.CoreDllFile, EntityName);
 }
 {
     var currClassTemplateName = "Abp.VueSpaWeb";
-    var directory = OutputDirectory + "\\";;
-    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  ToFirstLetterCamel(EntityName)+ ".vue");
+    var directory = OutputDirectory + "\\";    
+    RenderToFile(VueSpaWeb, currClassTemplateName + "\\Index.cst", directory,  names.VueWebPageName + ".vue");
+}
+{
+    var currClassTemplateName = "Abp.VueSpaWeb";
+    RenderOtherTemplate(BuildMenu, currClassTemplateName + "\\BuildMenu.cst");
 }
 //指定使用资源管理器打开文件夹
-System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
-System.AppDomain.Unload(System.AppDomain.CurrentDomain);
+//System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
+//System.AppDomain.Unload(System.AppDomain.CurrentDomain);
 %>

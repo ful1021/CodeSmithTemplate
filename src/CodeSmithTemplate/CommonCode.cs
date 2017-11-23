@@ -906,11 +906,13 @@ namespace CodeSmithTemplate
         {
             CodeTemplateCompiler compiler = new CodeTemplateCompiler(this.CodeTemplateInfo.DirectoryName + TemplateName);
 
+            CodeTemplate template = null;
+
             compiler.CodeTemplateInfo.ToString();
             compiler.Compile();
             if (compiler.Errors.Count == 0)
             {
-                return compiler.CreateInstance();
+                template = compiler.CreateInstance();
             }
             else
             {
@@ -921,18 +923,20 @@ namespace CodeSmithTemplate
                 }
                 throw new ApplicationException(errorMessage.ToString());
             }
+
+            //复制属性
+            if (template != null)
+            {
+                CopyPropertiesTo(template);
+            }
+
+            return template;
         }
 
         /// <summary>
         /// 通用根据模板生成文件方法
         /// </summary>
-        /// <param name="isRender"></param>
-        /// <param name="templatePath"></param>
-        /// <param name="directory"></param>
-        /// <param name="tables"></param>
-        /// <param name="className"></param>
-        /// <param name="splitTableName"></param>
-        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null, string splitTableName = "")
+        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null)
         {
             if (isRender)
             {
@@ -944,41 +948,44 @@ namespace CodeSmithTemplate
                 CodeTemplate template = GetCodeTemplate(templatePath);
                 foreach (var tab in tables)
                 {
-                    if (directory.IndexOf("{tablename}") >= 0)
-                    {
-                        directory = directory.Replace("{tablename}", tab.Name);
-                        if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                    }
-                    CopyPropertiesTo(template);
+                    //CopyPropertiesTo(template);
                     template.SetProperty("SourceTable", tab);
 
-                    string currclassName = null;
-                    if (className == null)
-                    {
-                        currclassName = tab.Name;
-                    }
-                    else
-                    {
-                        currclassName = className(tab);
-                    }
-                    if (!string.IsNullOrWhiteSpace(splitTableName) && currclassName.IndexOf("{tablename_split_last}") >= 0)
-                    {
-                        var temps = tab.Name.Split(splitTableName.ToArray());
-                        if (temps != null && temps.Length > 1)
-                        {
-                            currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
-                        }
-                    }
-                    if (currclassName.IndexOf(".") > 0)
-                    {
-                        template.RenderToFile(directory + currclassName, true);
-                    }
-                    else
-                    {
-                        template.RenderToFile(directory + currclassName + ".cs", true);
-                    }
+                    RenderToFile(directory, className, template, tab);
                 }
                 Response.WriteLine(templatePath + "代码生成完毕！");
+            }
+        }
+
+        /// <summary>
+        /// 输出其它模块内容
+        /// 需要在头部写命令注册：
+        /// <%@ Register Template="Abp.VueSpaWeb/BuildMenu.cst" Name="BuildMenuTemplate" MergeProperties="True" %> 
+        /// 调用：
+        /// RenderOtherTemplate<BuildMenuTemplate>(BuildMenu);
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void RenderOtherTemplate<T>(bool isRender) where T : CodeTemplate, new()
+        {
+            if (isRender)
+            {
+                T sm = new T();
+                this.CopyPropertiesTo(sm);
+                sm.Render(this.Response);
+            }
+        }
+
+        /// <summary>
+        /// 输出其它模块内容
+        /// </summary>
+        /// <param name="isRender"></param>
+        /// <param name="templatePath"></param>
+        public void RenderOtherTemplate(bool isRender, string templatePath)
+        {
+            if (isRender)
+            {
+                CodeTemplate template = GetCodeTemplate(templatePath);
+                template.Render(this.Response);
             }
         }
 
@@ -1013,10 +1020,12 @@ namespace CodeSmithTemplate
                 //载入子模板
                 CodeTemplate template = GetCodeTemplate(templatePath);
 
-                CopyPropertiesTo(template);
+                //CopyPropertiesTo(template);
+
                 template.SetProperty("Tables", Tables);
 
                 template.RenderToFile(directory + fileName, true);
+
                 Response.WriteLine(templatePath + "代码生成完毕！");
             }
         }
@@ -1024,27 +1033,64 @@ namespace CodeSmithTemplate
         /// <summary>
         /// 通用根据模板生成文件方法
         /// </summary>
-        /// <param name="isRender"></param>
-        /// <param name="templatePath"></param>
-        /// <param name="directory"></param>
-        /// <param name="currclassName"></param>
         public void RenderToFile(bool isRender, string templatePath, string directory, string currclassName)
         {
             if (isRender)
             {
                 //载入子模板
                 CodeTemplate template = GetCodeTemplate(templatePath);
-                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                CopyPropertiesTo(template);
-                if (currclassName.IndexOf(".") > 0)
-                {
-                    template.RenderToFile(Path.Combine(directory, currclassName), true);
-                }
-                else
-                {
-                    template.RenderToFile(Path.Combine(directory, currclassName) + ".cs", true);
-                }
+                //CopyPropertiesTo(template);
+
+                RenderToFile(directory, currclassName, template);
+
                 Response.WriteLine(templatePath + "代码生成完毕！");
+            }
+        }
+
+        private void RenderToFile(string directory, Func<TableSchema, string> className, CodeTemplate template, TableSchema tab)
+        {
+            if (directory.IndexOf("{tablename}") >= 0)
+            {
+                directory = directory.Replace("{tablename}", tab.Name);
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+            }
+            string currclassName = null;
+            if (className == null)
+            {
+                currclassName = tab.Name;
+            }
+            else
+            {
+                currclassName = className(tab);
+            }
+            //if (!string.IsNullOrWhiteSpace(splitTableName) && currclassName.IndexOf("{tablename_split_last}") >= 0)
+            //{
+            //    var temps = tab.Name.Split(splitTableName.ToArray());
+            //    if (temps != null && temps.Length > 1)
+            //    {
+            //        currclassName = currclassName.Replace("{tablename_split_last}", ToSingular(temps.LastOrDefault()));
+            //    }
+            //}
+            if (currclassName.IndexOf(".") > 0)
+            {
+                template.RenderToFile(directory + currclassName, true);
+            }
+            else
+            {
+                template.RenderToFile(directory + currclassName + ".cs", true);
+            }
+        }
+
+        private void RenderToFile(string directory, string currclassName, CodeTemplate template)
+        {
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+            if (currclassName.IndexOf(".") > 0)
+            {
+                template.RenderToFile(Path.Combine(directory, currclassName), true);
+            }
+            else
+            {
+                template.RenderToFile(Path.Combine(directory, currclassName) + ".cs", true);
             }
         }
 
@@ -1104,7 +1150,7 @@ namespace CodeSmithTemplate
         /// <summary>
         /// 获取 AssemblyFile 各命名
         /// </summary>
-        public ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "")
+        public ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
         {
             var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
             return new ClassNames()
@@ -1120,6 +1166,7 @@ namespace CodeSmithTemplate
                 ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
                 CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
                 PermissionPrefix = permissionPrefix,
+                VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? ToFirstLetterCamel(entityName) : vueSpaWebPageName,
                 VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
             };

@@ -22,9 +22,8 @@ Default="true"%>
 Default="true"%>
 <%@ Property Name="VueSpaWeb" Type="System.Boolean" Category="04.代码生成层" Description="生成VueSpaWeb" 
 Default="false"%>
-<%@ Property Name="VueSpaWebBaseAppService" Type="System.Boolean" Category="03.生成配置" Description="如果true,则需要先生成AppService，再生成web" Default="false"%>
-
-
+<%@ Property Name="BuildMenu" Type="System.Boolean" Category="04.代码生成层" Description="生成BuildMenu" 
+Default="false"%>
 
 <%@ Assembly Src="../../../ClassNames.cs" %>
 <%@ Assembly Name="SchemaExplorer" %>
