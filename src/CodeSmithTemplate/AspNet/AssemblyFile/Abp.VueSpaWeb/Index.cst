@@ -43,6 +43,7 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                 <el-col :span="4" :xs="24" class="pull-right">
                     <el-form-item label-width="0px">
                         <el-button size="small" type="primary" icon="search" @click="queryList">查询</el-button>
+                        <el-button size="small" icon="more" @click="searchShowMore = !searchShowMore">{{searchShowMore?'隐藏':'更多'}}</el-button>
                     </el-form-item>
                 </el-col>
                 <%foreach(var col in getAllInputColunms){ %>
@@ -58,7 +59,7 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
         <el-row class="division-border">
             <el-button @click="createOrUpdateDialog.isShow = true" type="primary" v-permission:<%=names.VueWebPermissionPrefix %>-Create>新增</el-button>
 			<el-button @click="preEdit(appService.get)" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>编辑</el-button>
-			<el-button @click="preBatchDelete(appService.delete)" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
+			<el-button @click="preBatchDelete(appService.delete)" type="danger" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
             <el-button @click="exportExcel">导出库存</el-button>
 			<el-button @click="downloadImporTemplate">下载模板</el-button>
 			<el-upload id="uploadExcel" style="margin-left:10px;display:inline" :headers="uploadFileSetting.headers" :action="uploadAction" :before-upload="beforeUploadExcel" :on-success="onUploadExcelSuccess" :on-error="onUploadExcelError" :show-file-list="false" accept=".xlsx">
@@ -66,6 +67,9 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
 			</el-upload>
         </el-row>
         <el-row class="division-border">
+            <el-radio-group style="margin-bottom: 10px;" v-model="radioGroupFilters" @change="queryList">
+				<el-radio :label="-999">所有</el-radio>
+			</el-radio-group>
             <div class="table-wrap-box">
                 <el-table stripe ref="listTable" :data="tableData" border style="width: 100%" @row-click="handleRowClick" @select-all="handleSelectAll"
                     :row-class-name="rowClassName">

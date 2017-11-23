@@ -18,8 +18,6 @@ var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 %>
 
 
-
-
 //放到 Web目录  \App_Start\Navigation 目录，PageNames.cs 
 
 public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName %>";
