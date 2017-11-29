@@ -35,13 +35,14 @@ namespace <%=assType.Namespace %>
     /// <summary>
     /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
     /// </summary>
-    public partial class <%=names.AppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>, I<%=names.AppServiceName %>
+    [AbpAuthorize]
+    public partial class <%=names.MgmtAppServiceName %> : <%=names.BaseAppServiceName %>, I<%=names.MgmtAppServiceName %>
     {
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="<%=ToFirstLetterCamel(EntityName) %>repository"></param>
-        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
+        public <%=names.MgmtAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
         {
             GetAllPermissionName = <%=names.AppServicePermissionPrefix %>;
             CreatePermissionName = <%=names.AppServicePermissionPrefix %>_Create;

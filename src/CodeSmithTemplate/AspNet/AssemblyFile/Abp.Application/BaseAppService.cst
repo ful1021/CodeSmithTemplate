@@ -9,45 +9,40 @@
 <%@ Assembly Src="../AssemblyFileHelper.cs" %>
 <%@ Import Namespace="CodeSmithTemplate" %>
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = GetProperties(assType);
+var getAllInputColumns = GetAllInputColumns(entityColumns);
 var pktype = GetPropertyType(assType, names.PkName);
+var pkDeaultValueString = GetPropertyDefaultValueString(assType, names.PkName);
 %>
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Abp.Application.Services;
-using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
+using <%=ProjectName %>.Authorization;
+using <%=ProjectName %>.Extensions;
 using <%=assType.Namespace %>.Dto;
 
 namespace <%=assType.Namespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务契约
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
     /// </summary>
-    public partial interface I<%=names.AppServiceName %> : IApplicationService
+    public partial class <%=names.BaseAppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>
     {
         /// <summary>
-        /// 获取分页列表
+        /// 构造函数
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        Task<PagedResultDto<<%=names.QueryDtoName %>>> GetAll(<%=names.GetAllInputName %> input);
-
-        /// <summary>
-        /// 获取详细
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        Task<<%=names.QueryDtoName %>> Get(EntityDto<<%=pktype %>> input);
-        
-        /// <summary>
-        /// 删除
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        Task Delete(EntityDto<<%=pktype %>> input);
+        /// <param name="<%=ToFirstLetterCamel(EntityName) %>repository"></param>
+        public <%=names.BaseAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
+        {
+        }
     }
 }

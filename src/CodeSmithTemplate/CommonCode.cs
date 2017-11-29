@@ -1156,12 +1156,14 @@ namespace CodeSmithTemplate
             return new ClassNames()
             {
                 PkName = "Id",
-                AppServiceName = entityName + "MgmtAppService",
+                AppServiceName = entityName + "AppService",
+                MgmtAppServiceName = entityName + "MgmtAppService",
+                BaseAppServiceName = entityName + "BaseAppService",
                 DtoName = entityName + "Dto",
                 QueryDtoName = entityName + "QueryDto",
                 GetAllInputName = entityName + "GetAllInput",
                 CreateOrUpdateInputName = entityName + "Dto",//"CreateOrUpdateInput",
-                CreateInputName = entityName + "Dto",//"CreateInput",
+                CreateInputName = entityName + "CreateInput",
                 UpdateInputName = entityName + "Dto",// "UpdateInput",
                 ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
                 CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
@@ -1170,6 +1172,15 @@ namespace CodeSmithTemplate
                 VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
             };
+        }
+
+        /// <summary>
+        /// App 类型
+        /// </summary>
+        public enum AppServiceType
+        {
+            纯管理后台应用,
+            混合应用
         }
     }
 }

@@ -27,6 +27,7 @@ namespace <%=assType.Namespace %>
     /// <summary>
     /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务契约
     /// </summary>
+    [RemoteService(IsEnabled = false)]
     public partial interface I<%=names.AppServiceName %> : IApplicationService
     {
         /// <summary>

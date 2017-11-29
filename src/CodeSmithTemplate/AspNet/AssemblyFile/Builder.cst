@@ -20,6 +20,7 @@ if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirector
 
 ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName,VueSpaWebPageName);
 Type assType = GetAssemblyType(names.CoreDllFile, EntityName);
+if(AppServiceType == AppServiceType.纯管理后台应用)
 {
     var currClassTemplateName = "Abp.Application";
     var currClasslibraryName = ProjectName + ".Application";
@@ -28,6 +29,19 @@ Type assType = GetAssemblyType(names.CoreDllFile, EntityName);
     
     RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAsyncAppService.cst", directory, "I" + names.AppServiceName);
     RenderToFile(AppAsyncService, currClassTemplateName + "\\AsyncAppService.cst", directory, names.AppServiceName);
+}
+else if(AppServiceType == AppServiceType.混合应用)
+{
+    var currClassTemplateName = "Abp.Application";
+    var currClasslibraryName = ProjectName + ".Application";
+    var root_directory = OutputDirectory + "\\" + currClasslibraryName + "\\";
+    var directory = root_directory + assType.Namespace.Replace(ProjectName,"").Replace(".","\\");
+    
+    RenderToFile(AppAsyncService, currClassTemplateName + "\\BaseAppService.cst", directory, names.BaseAppServiceName); 
+    RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAppService.cst", directory, "I" + names.AppServiceName);
+    RenderToFile(AppAsyncService, currClassTemplateName + "\\AppService.cst", directory, names.AppServiceName); 
+    RenderToFile(AppIAsyncService, currClassTemplateName + "\\IMgmtAppService.cst", directory, "I" + names.MgmtAppServiceName);
+    RenderToFile(AppAsyncService, currClassTemplateName + "\\MgmtAppService.cst", directory, names.MgmtAppServiceName); 
 }
 {
     var currClassTemplateName = "Abp.Application\\Dto";
@@ -38,6 +52,10 @@ Type assType = GetAssemblyType(names.CoreDllFile, EntityName);
     RenderToFile(AppGetAllDto, currClassTemplateName + "\\GetAllInput.cst", directory, names.GetAllInputName);
     RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, names.QueryDtoName);
     RenderToFile(AppDto, currClassTemplateName + "\\Dto.cst", directory, names.DtoName);
+    if(AppServiceType == AppServiceType.混合应用)
+    {
+        RenderToFile(AppDto, currClassTemplateName + "\\CreateInputDto.cst", directory, names.CreateInputName);
+    }
 }
 {
     var currClassTemplateName = "Abp.VueSpaWeb";

@@ -35,7 +35,7 @@ namespace <%=assType.Namespace %>
     /// <summary>
     /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
     /// </summary>
-    public partial class <%=names.AppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>, I<%=names.AppServiceName %>
+    public partial class <%=names.AppServiceName %> : <%=names.BaseAppServiceName %>, I<%=names.AppServiceName %>
     {
         /// <summary>
         /// 构造函数
@@ -43,28 +43,7 @@ namespace <%=assType.Namespace %>
         /// <param name="<%=ToFirstLetterCamel(EntityName) %>repository"></param>
         public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
         {
-            GetAllPermissionName = <%=names.AppServicePermissionPrefix %>;
-            CreatePermissionName = <%=names.AppServicePermissionPrefix %>_Create;
-            UpdatePermissionName = <%=names.AppServicePermissionPrefix %>_Edit;
-            DeletePermissionName = <%=names.AppServicePermissionPrefix %>_Delete;
         }
         
-        protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
-        {
-            return base.CreateFilteredQuery(input)
-                //.WhereIf(!input.Filter.IsNullOrWhiteSpace(), a => a.Code.Contains(input.Filter) || a.Name.Contains(input.Filter))
-                <%foreach (var col in getAllInputColumns){%>
-                <%if(GetCSharpNullType(col,true)=="DateTime?"){ %>
-                .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
-                <% continue;}%>
-                <%if(GetCSharpNullType(col, true)=="string"){ %>
-                .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
-                <% continue;}%>
-                <%if(col.PropertyType.IsValueType){ %>
-                .WhereIf(input.<%=col.Name %>.HasValue, a => a.<%=col.Name %> == input.<%=col.Name %>.Value)
-                <% continue;}%>
-                <%}%>
-                ;
-        }
     }
 }

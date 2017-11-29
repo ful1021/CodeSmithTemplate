@@ -3,6 +3,7 @@
 <%@ Property Name="VueSpaWebBaseAppService" Type="System.Boolean" Category="03.生成配置" Description="如果true,则需要先生成AppService，再生成web" Default="false"%>
 <%@ Property Name="VueSpaWebPageName" Type="System.String" Category="03.生成配置" Description="生成VueSpaWeb名称" Optional="True" %>
 <%@ Property Name="VueSpaWebPagePath" Type="System.String" Category="03.生成配置" Description="生成VueSpaWeb路径" Optional="True" %>
+<%@ Property Name="AppServiceType" Type="AppServiceType" Category="03.生成配置" Description="AppService生成类型" Optional="True" %>
 
 
 <%@ Assembly Src="../../../ClassNames.cs" %>

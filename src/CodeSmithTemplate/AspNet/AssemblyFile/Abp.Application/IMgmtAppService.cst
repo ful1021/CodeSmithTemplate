@@ -27,7 +27,7 @@ namespace <%=assType.Namespace %>
     /// <summary>
     /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务契约
     /// </summary>
-    public partial interface I<%=names.AppServiceName %> : IApplicationService
+    public partial interface I<%=names.MgmtAppServiceName %> : IApplicationService
     {
         /// <summary>
         /// 获取分页列表

@@ -2,11 +2,11 @@
 
 <%--<%@ Property Name="DllFile" Type="System.String" Category="01.数据源" Editor="System.Windows.Forms.Design.FileNameEditor" EditorBase="System.Drawing.Design.UITypeEditor" Description="Dll文件" Default="F:\Work\code\JK724\JK724.Scm\src\Boss.Scm.Application\bin\DEV\Boss.Scm.Application.dll" %>--%>
 
-<%@ Property Name="DllFolder" Type="System.String" Category="01.数据源" Editor="System.Windows.Forms.Design.FolderNameEditor" EditorBase="System.Drawing.Design.UITypeEditor" Description="Dll文件目录" Default="F:\Work\code\JK724\JK724.Scm\src\Boss.Scm.Application\bin\DEV\" %>
+<%@ Property Name="DllFolder" Type="System.String" Category="01.数据源" Editor="System.Windows.Forms.Design.FolderNameEditor" EditorBase="System.Drawing.Design.UITypeEditor" Description="Dll文件目录" Default="F:\Work\code\JK724\JK724.Microboss\src\Boss.Microboss.Web\bin" %>
 
-<%@ Property Name="ProjectName" Type="System.String" Category="01.数据源" Description="项目名称" Default="Boss.Scm" %>
+<%@ Property Name="ProjectName" Type="System.String" Category="01.数据源" Description="项目名称" Default="Boss.Microboss" %>
 <%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="实体名称" Default="InventoryAdjustment" %>
-<%@ Property Name="PermissionModuleName" Type="System.String" Category="01.数据源" Description="权限模块名称" Default="StorageCenter" %>
+<%@ Property Name="PermissionModuleName" Type="System.String" Category="01.数据源" Description="权限模块名称" Default="ProductCenter" %>
 
 <%@ Assembly Src="../../../ClassNames.cs" %>
 <%@ Assembly Name="SchemaExplorer" %>

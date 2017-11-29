@@ -58,10 +58,16 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="AspNet\AssemblyFile\Abp.Application\Dto\CreateInputDto.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\IMgmtAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\AppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\MgmtAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\BaseAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\AsyncAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\GetAllInput.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\Dto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\QueryDto.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\IAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IAsyncAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\BuildMenu.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\Index.cst" />
