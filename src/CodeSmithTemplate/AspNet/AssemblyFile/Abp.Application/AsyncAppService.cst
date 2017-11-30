@@ -41,7 +41,7 @@ namespace <%=assType.Namespace %>
         /// 构造函数
         /// </summary>
         /// <param name="<%=ToFirstLetterCamel(EntityName) %>repository"></param>
-        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>repository) : base(<%=ToFirstLetterCamel(EntityName) %>repository)
+        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>Repository) : base(<%=ToFirstLetterCamel(EntityName) %>Repository)
         {
             GetAllPermissionName = <%=names.AppServicePermissionPrefix %>;
             CreatePermissionName = <%=names.AppServicePermissionPrefix %>_Create;
