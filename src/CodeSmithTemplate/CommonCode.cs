@@ -1159,6 +1159,7 @@ namespace CodeSmithTemplate
                 AppServiceName = entityName + "AppService",
                 MgmtAppServiceName = entityName + "MgmtAppService",
                 BaseAppServiceName = entityName + "BaseAppService",
+                RepositoryName = ToFirstLetterCamel(entityName) + "Repository",
                 DtoName = entityName + "Dto",
                 QueryDtoName = entityName + "QueryDto",
                 GetAllInputName = entityName + "GetAllInput",

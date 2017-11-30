@@ -12,6 +12,7 @@ namespace CodeSmithTemplate
         public string AppServiceName { get; set; }
         public string MgmtAppServiceName { get; set; }
         public string BaseAppServiceName { get; set; }
+        public string RepositoryName { get; set; }
         public string GetAllInputName { get; set; }
         public string DtoName { get; set; }
         public string QueryDtoName { get; set; }

@@ -38,16 +38,19 @@ namespace <%=assType.Namespace %>
     [AbpAuthorize]
     public partial class <%=names.MgmtAppServiceName %> : <%=names.BaseAppServiceName %>, I<%=names.MgmtAppServiceName %>
     {
+        private readonly IRepository<<%=EntityName %>, <%=pktype %>> _<%=names.RepositoryName %>;
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="<%=ToFirstLetterCamel(EntityName) %>repository"></param>
-        public <%=names.MgmtAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=ToFirstLetterCamel(EntityName) %>Repository) : base(<%=ToFirstLetterCamel(EntityName) %>Repository)
+        /// <param name="<%=names.RepositoryName %>"></param>
+        public <%=names.MgmtAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
         {
             GetAllPermissionName = <%=names.AppServicePermissionPrefix %>;
             CreatePermissionName = <%=names.AppServicePermissionPrefix %>_Create;
             UpdatePermissionName = <%=names.AppServicePermissionPrefix %>_Edit;
             DeletePermissionName = <%=names.AppServicePermissionPrefix %>_Delete;
+            
+            _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
         }
         
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
