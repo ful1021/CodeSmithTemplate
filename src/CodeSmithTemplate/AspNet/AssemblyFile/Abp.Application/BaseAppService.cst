@@ -41,7 +41,7 @@ namespace <%=assType.Namespace %>
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="<%=names.RepositoryName %>></param>
+        /// <param name="<%=names.RepositoryName %>"></param>
         public <%=names.BaseAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
         {
             _<%=names.RepositoryName %> = <%=names.RepositoryName %>;

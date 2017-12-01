@@ -53,6 +53,11 @@ namespace <%=assType.Namespace %>
             _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
         }
         
+        /// <summary>
+        /// 查询条件
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
         {
             return base.CreateFilteredQuery(input)
