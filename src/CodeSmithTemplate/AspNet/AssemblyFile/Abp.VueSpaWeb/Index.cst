@@ -62,7 +62,7 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
 			<el-button @click="preBatchDelete(appService.delete)" type="danger" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
             <el-button @click="exportExcel">导出库存</el-button>
 			<el-button @click="downloadImporTemplate">下载模板</el-button>
-			<el-upload id="uploadExcel" style="margin-left:10px;display:inline" :headers="uploadFileSetting.headers" :action="uploadAction" :before-upload="beforeUploadExcel" :on-success="onUploadExcelSuccess" :on-error="onUploadExcelError" :show-file-list="false" accept=".xlsx">
+			<el-upload id="uploadExcel" style="margin-left:10px;display:inline" :headers="uploadFileSetting.headers" :action="uploadAction" :before-upload="beforeUploadFile" :on-success="onUploadFileSuccess" :on-error="onUploadFileError" :show-file-list="false" accept=".xlsx">
 				<el-button type="primary" v-loading.fullscreen.lock="uploadFileSetting.loading" element-loading-text="导入中，请耐心等待！">导入修改</el-button>
 			</el-upload>
         </el-row>
@@ -147,21 +147,10 @@ export default {
 		};
 	},
     methods: {
-		//导入  
+		//导入导出  
 		downloadImporTemplate() {
 			site.utils.downloadFileIframe('<%=excelControllerName %>/DownloadImporTemplate');
 		},
-		beforeUploadExcel(file) {
-			this.uploadFileSetting.loading = true;
-		},
-		onUploadExcelSuccess(response, file, fileList) {
-			this.onUploadFileSuccess(site.api.services.app.<%=jsAppService %>, response);
-		},
-		onUploadExcelError(err, file, fileList) {
-			this.onUploadFileError(err);
-		},
-        
-        //导出
 		exportExcel() {
 			site.utils.downloadFileIframe('<%=excelControllerName %>/ExportExcel?' + site.utils.json2get(this.filters));
 		}
