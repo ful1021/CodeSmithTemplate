@@ -11,27 +11,33 @@
 <%@ Import Namespace="CodeSmithTemplate" %>
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
 var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = GetProperties(assType);
 
-Dictionary<string, string> queryDtoColunms = null;
-Dictionary<string, string> getAllInputColunms = null;
-Dictionary<string, string> createOrUpdateInputColunms = null;
-
+PropertyInfo[] queryDtoProps = null;
+PropertyInfo[] getAllInputProps = null;
+PropertyInfo[] createOrUpdateInputProps = null;
 if(VueSpaWebBaseAppService)
 {
-    queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.QueryDtoName);
-    getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile,names.GetAllInputName);
-    createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(names.ApplicationDllFile, names.DtoName);
+    queryDtoProps = GetProperties(names.ApplicationDllFile,names.QueryDtoName);
+    getAllInputProps = GetProperties(names.ApplicationDllFile,names.GetAllInputName);
+    createOrUpdateInputProps = GetProperties(names.ApplicationDllFile, names.DtoName);
 } 
 else 
 {    
-    queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
-    getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(GetAllInputColumns(entityColumns));
-    createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(DtoColumns(entityColumns));
+    queryDtoProps = GetDtoProperties(entityColumns);
+    getAllInputProps = GetAllInputColumns(entityColumns);
+    createOrUpdateInputProps = GetDtoProperties(entityColumns);
 }
+var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(queryDtoProps);
+var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(getAllInputProps);
+var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(createOrUpdateInputProps);
+
+var entityEnumsProps = GetEnumProperties(entityColumns);
+var entityDateTimeProps = GetDateTimeProperties(entityColumns);
 
 var excelControllerName = "Wms/" + EntityName;
 var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService","");
@@ -47,10 +53,31 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                     </el-form-item>
                 </el-col>
                 <%foreach(var col in getAllInputColunms){ %>
-                <%if(IsIn(col.Key.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
-				<el-col :span="5" :xs="24">
+                <%if(IsIn(col.Key.Name.ToLower(), "maxresultcount","skipcount","sorting","filter")){continue;} %>
+                <%if(entityDateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+                <el-col :span="5" :xs="24">
                     <el-form-item label="<%=col.Value %>">
-                        <q-input v-model="filters.<%=col.Key %>" placeholder="<%=col.Value %>"></q-input>
+                        <el-date-picker size="small" format="yyyy-MM-dd" @change="filters.<%=ToFirstLetterCamel(col.Key.Name) %> = searchInfo.<%=ToFirstLetterCamel(col.Key.Name) %>" v-model="searchInfo.<%=ToFirstLetterCamel(col.Key.Name) %>" type="daterange" placeholder="选择日期范围">
+                        </el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <% continue;}%>
+                <%
+                var enumProp = entityEnumsProps.FirstOrDefault(a=>a.Name == col.Key.Name);
+                if(enumProp!=null){                 
+                %>
+                <el-col :span="5" :xs="24">
+                    <el-form-item label="<%=col.Value %>">
+                        <el-select size="small" v-model="filters.<%=ToFirstLetterCamel(col.Key.Name) %>" filterable placeholder="请选择" clearable>
+                            <el-option v-for="(item,index) in <%=ToFirstLetterCamel(enumProp.PropertyType.Name) %>List" :label="item.text" :value="item.value" :key="index">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>    
+                <% continue;}%>
+                <el-col :span="5" :xs="24">
+                    <el-form-item label="<%=col.Value %>">
+                        <q-input v-model="filters.<%=ToFirstLetterCamel(col.Key.Name) %>" placeholder="<%=col.Value %>"></q-input>
                     </el-form-item>
                 </el-col>
                 <%} %>
@@ -75,22 +102,29 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                     :row-class-name="rowClassName">
                     <el-table-column align="center" type="selection" width="50"></el-table-column>
                     <%foreach(var col in queryDtoColunms) {%>
-                    <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
-                    <%if(IsIn(col.Key.ToLower(), "creationtime","lastmodificationtime")){ %>
-                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>">
+                    <%if(IsIn(col.Key.Name.ToLower(),"id")){continue;} %>
+                    <%if(entityEnumsProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=ToFirstLetterCamel(col.Key.Name) %>">
                         <template scope="scope">
-                            <span>{{scope.row.<%=col.Key %> | dateFormat('yyyy-MM-dd hh:mm:ss')}}</span>
+                            <span>{{scope.row.<%=ToFirstLetterCamel(col.Key.Name) %> | enumValue(<%=ToFirstLetterCamel(col.Key.PropertyType.Name) %>List)}}</span>
                         </template>
                     </el-table-column>
                     <% continue;} %>
-                    <%if(IsIn(col.Key.ToLower(), "creatoruserid","lastmodifieruserid")){ %>
-                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>">
+                    <%if(entityDateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=ToFirstLetterCamel(col.Key.Name) %>">
                         <template scope="scope">
-                            <user-name :userId="scope.row.<%=col.Key %>"></user-name>
+                            <span>{{scope.row.<%=ToFirstLetterCamel(col.Key.Name) %> | dateFormat('yyyy-MM-dd hh:mm:ss')}}</span>
                         </template>
                     </el-table-column>
                     <% continue;} %>
-                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=col.Key %>"></el-table-column>
+                    <%if(IsIn(col.Key.Name.ToLower(), "creatoruserid","lastmodifieruserid")){ %>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=ToFirstLetterCamel(col.Key.Name) %>">
+                        <template scope="scope">
+                            <user-name :userId="scope.row.<%=ToFirstLetterCamel(col.Key.Name) %>"></user-name>
+                        </template>
+                    </el-table-column>
+                    <% continue;} %>
+                    <el-table-column header-align="center" label="<%=col.Value %>" prop="<%=ToFirstLetterCamel(col.Key.Name) %>"></el-table-column>
                     <%} %>
                 </el-table>
             </div>
@@ -103,9 +137,9 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
             <div class="form-wrap-box">
                 <el-form label-position="left" :model="createOrUpdateDialog.model" ref="createOrUpdateForm" label-width="100px">
                     <%foreach(var col in createOrUpdateInputColunms) {%>
-                    <%if(IsIn(col.Key.ToLower(),"id")){continue;} %>
-                    <el-form-item prop="<%=col.Key %>" label="<%=col.Value %>" :rules="{ required: true, message: '请输入<%=col.Value %>', trigger: 'blur' }">
-                        <el-input v-model="createOrUpdateDialog.model.<%=col.Key %>"></el-input>
+                    <%if(IsIn(col.Key.Name.ToLower(),"id")){continue;} %>
+                    <el-form-item prop="<%=col.Key.Name %>" label="<%=col.Value %>" :rules="{ required: true, message: '请输入<%=col.Value %>', trigger: 'blur' }">
+                        <el-input v-model="createOrUpdateDialog.model.<%=col.Key.Name %>"></el-input>
                     </el-form-item>
                     <%} %>
                 </el-form>
@@ -120,19 +154,32 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
 <script>
 let resetCreateForm = {		
     <%foreach(var col in createOrUpdateInputColunms){ %>
-    <%=col.Key %>:"",
+    <%=col.Key.Name %>:"",
     <%} %>
 };	
 let appService = site.api.services.app.<%=jsAppService %>;
 export default {
 	data() {
 		return {
+            <%foreach(var col in entityEnumsProps) {%>
+            <%=ToFirstLetterCamel(col.PropertyType.Name) %>List : [],
+            <%} %>
+        
 			filters: {
                 <%foreach(var col in getAllInputColunms){ %>
-                <%if(IsIn(col.Key.ToLower(), "maxresultcount","sorting","skipcount","filter")){continue;} %>
-                <%=col.Key %> : "",
+                <%if(IsIn(col.Key.Name.ToLower(), "maxresultcount","sorting","skipcount","filter")){continue;} %>
+                <%=ToFirstLetterCamel(col.Key.Name) %> : "",
                 <%} %>
         	},
+            <%if (entityDateTimeProps.Length > 0){%>
+			searchInfo: {
+                <%foreach(var col in getAllInputColunms){ %>
+                <%if(entityDateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
+                <%=ToFirstLetterCamel(col.Key.Name) %> : [],
+                <%} %>
+                <%} %>
+        	},
+            <%} %>
             
             appService: appService,
 			queryListHandler: appService.getAll,
@@ -147,6 +194,21 @@ export default {
 		};
 	},
     methods: {
+        init(){
+          this.queryList();
+          
+        <%if(entityEnumsProps.Length>0){ %>
+          site.api.wms.batchGetEnumList(
+            "<%=string.Join(",", entityEnumsProps.Select(a=>a.PropertyType.Name).ToList()) %>",
+            result => {
+            <%foreach(var col in entityEnumsProps) {%>
+              this.<%=ToFirstLetterCamel(col.PropertyType.Name) %>List = result.<%=ToFirstLetterCamel(col.PropertyType.Name) %>;
+            <%} %>
+            }
+          );
+        <%} %>
+      );
+        },
 		//导入导出  
 		downloadImporTemplate() {
 			site.utils.downloadFileIframe('<%=excelControllerName %>/DownloadImporTemplate');

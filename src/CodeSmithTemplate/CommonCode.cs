@@ -578,6 +578,12 @@ namespace CodeSmithTemplate
 
         #region 列
 
+        public static PropertyInfo[] GetProperties(string dllFile, string className)
+        {
+            var type = GetAssemblyType(dllFile, className);
+            return GetProperties(type);
+        }
+
         /// <summary>
         /// 反射获取PropertyInfo集合
         /// </summary>
@@ -598,7 +604,7 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="entityColumns"></param>
         /// <returns></returns>
-        public List<PropertyInfo> DtoColumns(PropertyInfo[] entityColumns)
+        public static PropertyInfo[] GetDtoProperties(PropertyInfo[] entityColumns)
         {
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in entityColumns)
@@ -617,7 +623,43 @@ namespace CodeSmithTemplate
                 }
                 list.Add(col);
             }
-            return list;
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// 所有枚举列
+        /// </summary>
+        /// <param name="props"></param>
+        /// <returns></returns>
+        public static PropertyInfo[] GetEnumProperties(PropertyInfo[] props)
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in props)
+            {
+                if (col.PropertyType.IsEnum)
+                {
+                    list.Add(col);
+                }
+            }
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// 所有枚举列
+        /// </summary>
+        /// <param name="props"></param>
+        /// <returns></returns>
+        public static PropertyInfo[] GetDateTimeProperties(PropertyInfo[] props)
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var col in props)
+            {
+                if (GetCSharpNullType(col).Contains("DateTime"))
+                {
+                    list.Add(col);
+                }
+            }
+            return list.ToArray();
         }
 
         /// <summary>
@@ -625,9 +667,9 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="entityColumns"></param>
         /// <returns></returns>
-        public List<PropertyInfo> GetAllInputColumns(PropertyInfo[] entityColumns)
+        public static PropertyInfo[] GetAllInputColumns(PropertyInfo[] entityColumns)
         {
-            var dtos = DtoColumns(entityColumns);
+            var dtos = GetDtoProperties(entityColumns);
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in dtos)
             {
@@ -637,7 +679,7 @@ namespace CodeSmithTemplate
                 }
                 list.Add(col);
             }
-            return list;
+            return list.ToArray();
         }
 
         /// <summary>
@@ -686,7 +728,7 @@ namespace CodeSmithTemplate
         /// <param name="ignoreCase">是否忽略大小写</param>
         /// <param name="type">列在C#中的类型字符串</param>
         /// <returns></returns>
-        public bool IsExistsCol(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
+        public static bool IsExistsCol(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
         {
             var b = false;
             foreach (var col in entityColumns)
@@ -729,7 +771,7 @@ namespace CodeSmithTemplate
         public static string GetCSharpNullType(PropertyInfo prop)
         {
             var propTypeFullName = prop.PropertyType.FullName;
-            var type = GetCSharpType(prop.PropertyType.FullName);
+            var type = GetCSharpType(propTypeFullName);
             if (type.Contains("Nullable"))
             {
                 if (propTypeFullName.Contains("Int32"))
@@ -960,7 +1002,7 @@ namespace CodeSmithTemplate
         /// <summary>
         /// 输出其它模块内容
         /// 需要在头部写命令注册：
-        /// <%@ Register Template="Abp.VueSpaWeb/BuildMenu.cst" Name="BuildMenuTemplate" MergeProperties="True" %> 
+        /// <%@ Register Template="Abp.VueSpaWeb/BuildMenu.cst" Name="BuildMenuTemplate" MergeProperties="True" %>
         /// 调用：
         /// RenderOtherTemplate<BuildMenuTemplate>(BuildMenu);
         /// </summary>

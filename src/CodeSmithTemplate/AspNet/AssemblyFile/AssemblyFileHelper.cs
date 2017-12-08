@@ -7,25 +7,12 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
 {
     public static class AssemblyFileHelper
     {
-        public static Dictionary<string, string> GetPropertiesSummary(string dllFile, string className, bool isFirstLetterCamel = true)
+        public static Dictionary<PropertyInfo, string> GetPropertiesSummary(PropertyInfo[] props)
         {
-            var type = CommonCode.GetAssemblyType(dllFile, className);
-            var props = CommonCode.GetProperties(type).ToList();
-            return GetPropertiesSummary(props, isFirstLetterCamel);
-        }
-
-        public static Dictionary<string, string> GetPropertiesSummary(List<PropertyInfo> props, bool isFirstLetterCamel = true)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            Dictionary<PropertyInfo, string> dict = new Dictionary<PropertyInfo, string>();
             foreach (var item in props)
             {
-                var name = item.Name;
-                string text = GetPropertySummary(item);
-                if (isFirstLetterCamel)
-                {
-                    name = CommonCode.ToFirstLetterCamel(name);
-                }
-                dict[name] = text;
+                dict[item] = GetPropertySummary(item);
             }
             return dict;
         }

@@ -16,7 +16,7 @@ var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionM
 var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 var pktype = GetPropertyType(assType, names.PkName);
 var entityColumns = GetProperties(assType);
-var dtoColumns = DtoColumns(entityColumns);
+var dtoColumns = GetDtoProperties(entityColumns);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
