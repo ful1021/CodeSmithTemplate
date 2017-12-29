@@ -57,14 +57,14 @@ var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService"
                 <%if(entityDateTimeProps.Select(a=>a.Name).Contains(col.Key.Name)){ %>
                 <el-col :span="5" :xs="24">
                     <el-form-item label="<%=col.Value %>">
-                        <el-date-picker size="small" format="yyyy-MM-dd" @change="filters.<%=ToFirstLetterCamel(col.Key.Name) %> = searchInfo.<%=ToFirstLetterCamel(col.Key.Name) %>" v-model="searchInfo.<%=ToFirstLetterCamel(col.Key.Name) %>" type="daterange" placeholder="选择日期范围">
+                        <el-date-picker size="small" :picker-options="pickerOptions" format="yyyy-MM-dd" @change="filters.<%=ToFirstLetterCamel(col.Key.Name) %> = searchInfo.<%=ToFirstLetterCamel(col.Key.Name) %>" v-model="searchInfo.<%=ToFirstLetterCamel(col.Key.Name) %>" type="daterange" placeholder="选择日期范围">
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
                 <% continue;}%>
                 <%
                 var enumProp = entityEnumsProps.FirstOrDefault(a=>a.Name == col.Key.Name);
-                if(enumProp!=null){                 
+                if(enumProp != null){                 
                 %>
                 <el-col :span="5" :xs="24">
                     <el-form-item label="<%=col.Value %>">
@@ -182,7 +182,6 @@ export default {
             <%} %>
             
             appService: appService,
-			queryListHandler: appService.getAll,
             
 			createOrUpdateDialog: {
 				saveHandle: appService.createOrUpdate,
@@ -207,7 +206,15 @@ export default {
             }
           );
         <%} %>
-      );
+            );
+        },
+        queryList() {
+          let input_data = {};
+          switch (this.radioGroupFilters) {
+            case -999:
+              break;
+          }
+          this.defaultQueryList(this.appService.getAll, input_data);
         },
 		//导入导出  
 		downloadImporTemplate() {
