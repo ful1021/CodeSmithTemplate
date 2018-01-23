@@ -203,8 +203,8 @@ export default {
             <%foreach(var col in entityEnumsProps) {%>
               this.<%=ToFirstLetterCamel(col.PropertyType.Name) %>List = result.<%=ToFirstLetterCamel(col.PropertyType.Name) %>;
             <%} %>
-            }
-          );
+                  }
+               );
         <%} %>
             );
         },

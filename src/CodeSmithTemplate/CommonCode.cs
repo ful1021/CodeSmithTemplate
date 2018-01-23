@@ -790,6 +790,10 @@ namespace CodeSmithTemplate
                 {
                     return "bool?";
                 }
+                else if (propTypeFullName.Contains("Guid"))
+                {
+                    return "Guid?";
+                }
             }
             return type;
         }
