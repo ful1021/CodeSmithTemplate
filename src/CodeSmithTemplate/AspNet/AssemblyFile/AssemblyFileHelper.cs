@@ -340,7 +340,8 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             {
                 case "System.AnsiString":
                 case "System.AnsiStringFixedLength": return "string";
-                case "System.Binary": return "byte[]";
+                case "System.Binary":
+                case "System.Byte[]": return "byte[]";
                 case "System.Boolean": return "bool";
                 case "System.Byte": return "byte";
                 case "System.Currency": return "decimal";
@@ -372,7 +373,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         {
             var propTypeFullName = prop.PropertyType.FullName;
             var type = GetCSharpNullableTypeByProp(prop);
-            if (type != "string" && !CommonCode.IsAbpValueObject(prop))
+            if (type != "string" && !CommonCode.IsAbpValueObject(prop) && !type.Contains("[]"))
             {
                 if (!type.EndsWith("?"))
                 {
