@@ -113,7 +113,7 @@ namespace CodeSmithTemplate
         /// <returns></returns>
         public string GetPKCSharpType(TableSchema table)
         {
-            return GetCSharpType(table.PrimaryKey.MemberColumns[0]);
+            return GetCSharpTypeByDb(table.PrimaryKey.MemberColumns[0]);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace CodeSmithTemplate
             {
                 return nameEqual;
             }
-            return nameEqual && GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+            return nameEqual && GetCSharpTypeByDb(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace CodeSmithTemplate
         /// <param name="ignoreCase">是否忽略大小写</param>
         /// <param name="type">列在C#中的类型字符串</param>
         /// <returns></returns>
-        public bool IsExistsCol(TableSchema tab, string name, bool ignoreCase = false, string type = null)
+        public bool IsExistsColDb(TableSchema tab, string name, bool ignoreCase = false, string type = null)
         {
             var b = false;
             foreach (var col in tab.Columns)
@@ -184,7 +184,7 @@ namespace CodeSmithTemplate
                 }
                 if (b && !string.IsNullOrWhiteSpace(type))
                 {
-                    b = GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+                    b = GetCSharpTypeByDb(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
                 }
                 if (b)
                 {
@@ -213,7 +213,7 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="column"></param>
         /// <returns></returns>
-        public string GetCSharpNullType(ColumnSchema column)
+        public string GetCSharpNullableTypeByDb(ColumnSchema column)
         {
             if (column.Name.EndsWith("TypeCode")) return column.Name;
             switch (column.DataType)
@@ -302,7 +302,7 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="column"></param>
         /// <returns></returns>
-        public string GetCSharpType(ColumnSchema column)
+        public string GetCSharpTypeByDb(ColumnSchema column)
         {
             //if (column.Name.EndsWith("TypeCode")) return column.Name;
             //获取oracle数据库的属性是NativeType属性，它是一个string类型的结果，将会是比如clob,number,timestamp(6),这样的，
@@ -578,7 +578,7 @@ namespace CodeSmithTemplate
 
         #region 列
 
-        public static PropertyInfo[] GetProperties(string dllFile, string className)
+        public static PropertyInfo[] GetPropertiesByDll(string dllFile, string className)
         {
             var type = GetAssemblyType(dllFile, className);
             return GetProperties(type);
@@ -654,7 +654,7 @@ namespace CodeSmithTemplate
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in props)
             {
-                if (GetCSharpNullType(col).Contains("DateTime"))
+                if (GetCSharpNullableTypeByProp(col).Contains("DateTime"))
                 {
                     list.Add(col);
                 }
@@ -692,7 +692,7 @@ namespace CodeSmithTemplate
             var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
             if (propInfo != null)
             {
-                return GetCSharpType(propInfo);
+                return GetCSharpTypeByProp(propInfo);
             }
             return "";
         }
@@ -707,7 +707,7 @@ namespace CodeSmithTemplate
             var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
             if (propInfo != null)
             {
-                var ctype = GetCSharpType(propInfo);
+                var ctype = GetCSharpTypeByProp(propInfo);
                 if (ctype.Equals("Guid", StringComparison.CurrentCultureIgnoreCase))
                 {
                     return "Guid.Empty";
@@ -728,7 +728,7 @@ namespace CodeSmithTemplate
         /// <param name="ignoreCase">是否忽略大小写</param>
         /// <param name="type">列在C#中的类型字符串</param>
         /// <returns></returns>
-        public static bool IsExistsCol(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
+        public static bool IsExistsColByProp(PropertyInfo[] entityColumns, string name, bool ignoreCase = false, string type = null)
         {
             var b = false;
             foreach (var col in entityColumns)
@@ -749,7 +749,7 @@ namespace CodeSmithTemplate
                 }
                 if (b && !string.IsNullOrWhiteSpace(type))
                 {
-                    b = GetCSharpType(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
+                    b = GetCSharpTypeByProp(col).Trim().Equals(type.Trim(), StringComparison.OrdinalIgnoreCase);
                 }
                 if (b)
                 {
@@ -768,10 +768,10 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="structType"></param>
         /// <returns></returns>
-        public static string GetCSharpNullType(PropertyInfo prop)
+        public static string GetCSharpNullableTypeByProp(PropertyInfo prop)
         {
             var propTypeFullName = prop.PropertyType.FullName;
-            var type = GetCSharpType(propTypeFullName);
+            var type = GetCSharpTypeByPropertyTypeFullName(propTypeFullName);
             if (type.Contains("Nullable"))
             {
                 if (propTypeFullName.Contains("Int32"))
@@ -803,9 +803,9 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="structType"></param>
         /// <returns></returns>
-        public static string GetCSharpType(PropertyInfo prop)
+        public static string GetCSharpTypeByProp(PropertyInfo prop)
         {
-            return GetCSharpType(prop.PropertyType.FullName);
+            return GetCSharpTypeByPropertyTypeFullName(prop.PropertyType.FullName);
         }
 
         /// <summary>
@@ -813,7 +813,7 @@ namespace CodeSmithTemplate
         /// </summary>
         /// <param name="structType"></param>
         /// <returns></returns>
-        public static string GetCSharpType(string typeName)
+        public static string GetCSharpTypeByPropertyTypeFullName(string typeName)
         {
             switch (typeName)
             {
@@ -847,11 +847,11 @@ namespace CodeSmithTemplate
             }
         }
 
-        public static string GetCSharpNullType(PropertyInfo prop, bool isCanNullable = false)
+        public static string GetCSharpAppServiceInputType(PropertyInfo prop)
         {
             var propTypeFullName = prop.PropertyType.FullName;
-            var type = GetCSharpNullType(prop);
-            if (isCanNullable && type != "string" && !IsAbpValueObject(prop))
+            var type = GetCSharpNullableTypeByProp(prop);
+            if (type != "string" && !IsAbpValueObject(prop))
             {
                 if (!type.EndsWith("?"))
                 {
@@ -982,7 +982,7 @@ namespace CodeSmithTemplate
         /// <summary>
         /// 通用根据模板生成文件方法
         /// </summary>
-        public void RenderToFile(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null)
+        public void RenderToFileByTables(bool isRender, string templatePath, string directory, TableSchemaCollection tables, Func<TableSchema, string> className = null)
         {
             if (isRender)
             {
@@ -1011,7 +1011,7 @@ namespace CodeSmithTemplate
         /// RenderOtherTemplate<BuildMenuTemplate>(BuildMenu);
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RenderOtherTemplate<T>(bool isRender) where T : CodeTemplate, new()
+        public void RenderOtherTemplateResponse<T>(bool isRender) where T : CodeTemplate, new()
         {
             if (isRender)
             {
@@ -1043,7 +1043,7 @@ namespace CodeSmithTemplate
         /// <param name="directory"></param>
         /// <param name="Tables"></param>
         /// <param name="fileName"></param>
-        public void RenderToFileByTables(bool isRender, string templatePath, string directory, TableSchemaCollection Tables, string fileName = null)
+        public void RenderToFileByTablesFixFileName(bool isRender, string templatePath, string directory, TableSchemaCollection Tables, string fileName = null)
         {
             if (isRender)
             {
@@ -1217,6 +1217,7 @@ namespace CodeSmithTemplate
                 PermissionPrefix = permissionPrefix,
                 VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? ToFirstLetterCamel(entityName) : vueSpaWebPageName,
                 VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
+                WebControllerName = entityName + "Controller",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
             };
         }

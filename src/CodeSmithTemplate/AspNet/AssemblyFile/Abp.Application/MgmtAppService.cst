@@ -18,6 +18,9 @@ var entityColumns = GetProperties(assType);
 var getAllInputColumns = GetAllInputColumns(entityColumns);
 var pktype = GetPropertyType(assType, names.PkName);
 var pkDeaultValueString = GetPropertyDefaultValueString(assType, names.PkName);
+
+var entityDateTimeProps = GetDateTimeProperties(getAllInputColumns);
+
 %>
 using System;
 using System.Linq;
@@ -60,13 +63,18 @@ namespace <%=assType.Namespace %>
         /// <returns></returns>
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
         {
+            //var filters = input.Filter.ToStringArray();
+            <%foreach(var col in entityDateTimeProps) {%>
+            var <%=ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
+            <%} %>
+            
             return base.CreateFilteredQuery(input)
-                //.WhereIf(!input.Filter.IsNullOrWhiteSpace(), a => a.Code.Contains(input.Filter) || a.Name.Contains(input.Filter))
+                //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in getAllInputColumns){%>
-                <%if(GetCSharpNullType(col,true)=="DateTime?"){ %>
+                <%if(GetCSharpTypeByProp(col)=="DateTime"){ %>
                 .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 <% continue;}%>
-                <%if(GetCSharpNullType(col, true)=="string"){ %>
+                <%if(GetCSharpTypeByProp(col)=="string"){ %>
                 .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <% continue;}%>
                 <%if(col.PropertyType.IsValueType){ %>

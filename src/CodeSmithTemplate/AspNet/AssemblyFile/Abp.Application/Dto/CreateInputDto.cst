@@ -35,7 +35,7 @@ namespace <%=assType.Namespace %>.Dto
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>
-        public <%=GetCSharpNullType(col) %> <%=col.Name %> { get; set; }
+        public <%=GetCSharpNullableTypeByProp(col) %> <%=col.Name %> { get; set; }
         
         <%}%>
     }    

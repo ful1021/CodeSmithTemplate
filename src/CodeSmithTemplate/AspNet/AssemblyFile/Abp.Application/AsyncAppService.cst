@@ -55,6 +55,11 @@ namespace <%=assType.Namespace %>
             _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
         }
         
+        /// <summary>
+        /// 查询条件
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
         {
             //var filters = input.Filter.ToStringArray();
@@ -65,10 +70,10 @@ namespace <%=assType.Namespace %>
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in getAllInputColumns){%>
-                <%if(GetCSharpNullType(col,true)=="DateTime?"){ %>
+                <%if(GetCSharpTypeByProp(col)=="DateTime"){ %>
                 .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 <% continue;}%>
-                <%if(GetCSharpNullType(col, true)=="string"){ %>
+                <%if(GetCSharpTypeByProp(col)=="string"){ %>
                 .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <% continue;}%>
                 <%if(col.PropertyType.IsValueType){ %>

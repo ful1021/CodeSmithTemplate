@@ -26,5 +26,6 @@ namespace CodeSmithTemplate
         public string AppServicePermissionPrefix { get; set; }
         public string VueWebPermissionPrefix { get; set; }
         public string VueWebPageName { get; set; }
+        public string WebControllerName { get; set; }
     }
 }

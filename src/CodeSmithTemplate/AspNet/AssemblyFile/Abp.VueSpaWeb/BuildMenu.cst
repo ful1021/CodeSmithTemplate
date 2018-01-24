@@ -23,6 +23,8 @@ var assType = GetAssemblyType(names.CoreDllFile, EntityName);
 public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName %>";
 
 
+//放到 Core目录 \Authorization 目录  ScmAuthorizationProvider.cs （如果存在则不用添加，只需要第一次添加）
+BuilderUtils.Build(context, "<%=PermissionModuleName %>");
 
 //放到 Core目录  \Authorization\Builders\Permissions 目录  xxx.json
 

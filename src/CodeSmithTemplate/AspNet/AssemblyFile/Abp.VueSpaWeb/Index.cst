@@ -14,7 +14,7 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var assType = GetPropertiesByDll(names.CoreDllFile, EntityName);
 var entityColumns = GetProperties(assType);
 
 PropertyInfo[] queryDtoProps = null;
@@ -22,9 +22,9 @@ PropertyInfo[] getAllInputProps = null;
 PropertyInfo[] createOrUpdateInputProps = null;
 if(VueSpaWebBaseAppService)
 {
-    queryDtoProps = GetProperties(names.ApplicationDllFile,names.QueryDtoName);
-    getAllInputProps = GetProperties(names.ApplicationDllFile,names.GetAllInputName);
-    createOrUpdateInputProps = GetProperties(names.ApplicationDllFile, names.DtoName);
+    queryDtoProps = GetPropertiesByDll(names.ApplicationDllFile,names.QueryDtoName);
+    getAllInputProps = GetPropertiesByDll(names.ApplicationDllFile,names.GetAllInputName);
+    createOrUpdateInputProps = GetPropertiesByDll(names.ApplicationDllFile, names.DtoName);
 } 
 else 
 {    
@@ -40,7 +40,7 @@ var entityEnumsProps = GetEnumProperties(entityColumns);
 var entityDateTimeProps = GetDateTimeProperties(entityColumns);
 
 var excelControllerName = "Wms/" + EntityName;
-var jsAppService = ToFirstLetterCamel(names.AppServiceName).Replace("AppService","");
+var jsAppService = ToFirstLetterCamel(names.MgmtAppServiceName).Replace("AppService","");
 %>
 <template>
     <div class="content">
@@ -204,7 +204,6 @@ export default {
               this.<%=ToFirstLetterCamel(col.PropertyType.Name) %>List = result.<%=ToFirstLetterCamel(col.PropertyType.Name) %>;
             <%} %>
                   }
-               );
         <%} %>
             );
         },

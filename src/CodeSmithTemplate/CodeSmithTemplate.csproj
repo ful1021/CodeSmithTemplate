@@ -71,6 +71,7 @@
     <None Include="AspNet\AssemblyFile\Abp.Application\IAsyncAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\BuildMenu.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\Index.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Web\Controller.cst" />
     <None Include="AspNet\AssemblyFile\Builder.cst" />
     <None Include="AspNet\AssemblyFile\Helper\AssemblyFileProperty.cst" />
     <None Include="AspNet\AssemblyFile\Helper\GenerateConfigProperty.cst" />
