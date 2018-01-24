@@ -1,0 +1,54 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+
+<%@ Register Template="../../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Assembly Src="../../../../ClassNames.cs" %>
+<%@ Assembly Src="../../blqw.CSComment/CSComment.cs" %>
+<%@ Import Namespace="blqw.Reflection" %>
+<%@ Assembly Src="../../AssemblyFileHelper.cs" %>
+<%@ Import Namespace="CodeSmithTemplate" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
+var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
+var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, names.PkName);
+
+var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
+
+%>
+
+        /// <summary>
+        /// 查询条件
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
+        {
+            //var filters = input.Filter.ToStringArray();
+            <%foreach(var col in entityDateTimeProps) {%>
+            var <%=ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
+            <%} %>
+            
+            return base.CreateFilteredQuery(input)
+                //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
+                <%foreach (var col in getAllInputColumns){%>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="DateTime"){ %>
+                .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
+                <% continue;}%>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="string"){ %>
+                .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
+                <% continue;}%>
+                <%if(col.PropertyType.IsValueType){ %>
+                .WhereIf(input.<%=col.Name %>.HasValue, a => a.<%=col.Name %> == input.<%=col.Name %>.Value)
+                <% continue;}%>
+                <%}%>
+                ;
+        }

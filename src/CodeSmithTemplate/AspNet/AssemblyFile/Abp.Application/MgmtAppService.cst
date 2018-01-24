@@ -1,5 +1,7 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Register Template="SubTemplate/CreateFilteredQuery.cst" Name="CreateFilteredQuery" MergeProperties="True" %>  
+
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
@@ -56,32 +58,8 @@ namespace <%=assType.Namespace %>
             _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
         }
         
-        /// <summary>
-        /// 查询条件
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
-        {
-            //var filters = input.Filter.ToStringArray();
-            <%foreach(var col in entityDateTimeProps) {%>
-            var <%=ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
-            <%} %>
-            
-            return base.CreateFilteredQuery(input)
-                //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
-                <%foreach (var col in getAllInputColumns){%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="DateTime"){ %>
-                .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
-                <% continue;}%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="string"){ %>
-                .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
-                <% continue;}%>
-                <%if(col.PropertyType.IsValueType){ %>
-                .WhereIf(input.<%=col.Name %>.HasValue, a => a.<%=col.Name %> == input.<%=col.Name %>.Value)
-                <% continue;}%>
-                <%}%>
-                ;
-        }
+<%
+RenderOtherTemplateResponse<CreateFilteredQuery>();
+%>
     }
 }

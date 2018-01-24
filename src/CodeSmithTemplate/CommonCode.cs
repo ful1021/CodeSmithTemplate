@@ -207,14 +207,11 @@ namespace CodeSmithTemplate
         /// RenderOtherTemplate<BuildMenuTemplate>(BuildMenu);
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RenderOtherTemplateResponse<T>(bool isRender) where T : CodeTemplate, new()
+        public void RenderOtherTemplateResponse<T>() where T : CodeTemplate, new()
         {
-            if (isRender)
-            {
-                T sm = new T();
-                this.CopyPropertiesTo(sm);
-                sm.Render(this.Response);
-            }
+            T sm = new T();
+            this.CopyPropertiesTo(sm);
+            sm.Render(this.Response);
         }
 
         /// <summary>

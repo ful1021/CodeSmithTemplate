@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="AspNet\AssemblyFile\Abp.Application\Sub\CreateFilteredQuery.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\CreateFilteredQuery.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\CreateInputDto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IMgmtAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\AppService.cst" />
