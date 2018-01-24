@@ -13,9 +13,9 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = GetProperties(assType);
-var getAllInputColumns = GetAllInputColumns(entityColumns);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -34,17 +34,17 @@ namespace <%=assType.Namespace %>.Dto
         /// </summary>
         public <%=names.GetAllInputName %>()
         {
-            <%if(IsExistsColByProp(entityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
+            <%if(AssemblyFileHelper.IsExistsColByProp(entityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
         }
         
         <%foreach (var col in getAllInputColumns){%>        
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>       
-        <%if(GetCSharpTypeByProp(col)=="DateTime"){ %>
+        <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="DateTime"){ %>
         public DateTime[] <%=col.Name %> { get; set; }
         <% continue;}%>
-        public <%=GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }
+        public <%=AssemblyFileHelper.GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }
         
         <%}%>
     }

@@ -18,6 +18,9 @@ var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
 var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
 var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, names.PkName);
+
+var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
+
 %>
 using System;
 using System.Linq;
@@ -30,21 +33,36 @@ using <%=ProjectName %>.Authorization;
 using <%=ProjectName %>.Extensions;
 using <%=assType.Namespace %>.Dto;
 
-namespace <%=assType.Namespace %>
+namespace <%=ProjectName %>.Web.Areas<%=assType.Namespace.Replace(ProjectName,"") %>.Controllers
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
+    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  控制器
     /// </summary>
-    public partial class <%=names.BaseAppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>
+    public class <%=names.WebControllerName %> : ScmControllerBase
     {
-        private readonly IRepository<<%=EntityName %>, <%=pktype %>> _<%=names.RepositoryName %>;
+        private readonly I<%=names.MgmtAppServiceName %> _<%=ToFirstLetterCamel(names.MgmtAppServiceName) %>;
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="<%=names.RepositoryName %>"></param>
-        public <%=names.BaseAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
+        public <%=names.WebControllerName %>(I<%=names.MgmtAppServiceName %> <%=ToFirstLetterCamel(names.MgmtAppServiceName) %>)
         {
-            _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
+            _<%=ToFirstLetterCamel(names.MgmtAppServiceName) %> = <%=ToFirstLetterCamel(names.MgmtAppServiceName) %>;
+        }
+        
+        [DisableAuditing]
+        public async Task<FileResult> ExportExcel(<%=names.GetAllInputName %> input)
+        {
+            var list = await _<%=ToFirstLetterCamel(names.MgmtAppServiceName) %>.GetAll(input);
+            var stream = list.Items.ToExcel("货主库存", new[] { "仓库编码", "货主编码", "商品编码", "可用数量" }
+            , a => a.WarehouseCode
+            , a => a.CargoOwnerCode
+            , a => a.GoodsCode
+            , a => a.AvailableQty
+                );
+            using (stream)
+            {
+                return File(stream.ToArray(), "application/vnd.ms-excel", $"货主库存{DateTime.Now:yyyy-MM-dd HH-mm-ss}.xlsx;
+            }
         }
     }
 }

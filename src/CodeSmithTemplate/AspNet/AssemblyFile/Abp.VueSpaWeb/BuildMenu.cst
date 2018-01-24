@@ -13,7 +13,7 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName, VueSpaWebPageName);
-var assType = GetAssemblyType(names.CoreDllFile, EntityName);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 
 %>
 

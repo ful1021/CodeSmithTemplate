@@ -13,11 +13,11 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = GetProperties(assType);
-var getAllInputColumns = GetAllInputColumns(entityColumns);
-var pktype = GetPropertyType(assType, names.PkName);
-var pkDeaultValueString = GetPropertyDefaultValueString(assType, names.PkName);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
+var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
+var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, names.PkName);
 %>
 using System;
 using System.Linq;

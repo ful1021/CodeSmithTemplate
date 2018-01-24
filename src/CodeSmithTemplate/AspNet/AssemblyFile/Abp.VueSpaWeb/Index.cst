@@ -14,30 +14,29 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = GetPropertiesByDll(names.CoreDllFile, EntityName);
-var entityColumns = GetProperties(assType);
+var entityColumns = AssemblyFileHelper.GetPropertiesByDll(names.CoreDllFile, EntityName);
 
 PropertyInfo[] queryDtoProps = null;
 PropertyInfo[] getAllInputProps = null;
 PropertyInfo[] createOrUpdateInputProps = null;
 if(VueSpaWebBaseAppService)
 {
-    queryDtoProps = GetPropertiesByDll(names.ApplicationDllFile,names.QueryDtoName);
-    getAllInputProps = GetPropertiesByDll(names.ApplicationDllFile,names.GetAllInputName);
-    createOrUpdateInputProps = GetPropertiesByDll(names.ApplicationDllFile, names.DtoName);
+    queryDtoProps = AssemblyFileHelper.GetPropertiesByDll(names.ApplicationDllFile,names.QueryDtoName);
+    getAllInputProps = AssemblyFileHelper.GetPropertiesByDll(names.ApplicationDllFile,names.GetAllInputName);
+    createOrUpdateInputProps = AssemblyFileHelper.GetPropertiesByDll(names.ApplicationDllFile, names.DtoName);
 } 
 else 
 {    
-    queryDtoProps = GetDtoProperties(entityColumns);
-    getAllInputProps = GetAllInputColumns(entityColumns);
-    createOrUpdateInputProps = GetDtoProperties(entityColumns);
+    queryDtoProps = AssemblyFileHelper.GetDtoProperties(entityColumns);
+    getAllInputProps = AssemblyFileHelper.GetAllInputColumns(entityColumns);
+    createOrUpdateInputProps = AssemblyFileHelper.GetDtoProperties(entityColumns);
 }
 var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(queryDtoProps);
 var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(getAllInputProps);
 var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(createOrUpdateInputProps);
 
-var entityEnumsProps = GetEnumProperties(entityColumns);
-var entityDateTimeProps = GetDateTimeProperties(entityColumns);
+var entityEnumsProps = AssemblyFileHelper.GetEnumProperties(entityColumns);
+var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(entityColumns);
 
 var excelControllerName = "Wms/" + EntityName;
 var jsAppService = ToFirstLetterCamel(names.MgmtAppServiceName).Replace("AppService","");

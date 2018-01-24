@@ -52,12 +52,14 @@
   <ItemGroup>
     <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSComment.cs" />
     <Compile Include="AspNet\AssemblyFile\AssemblyFileHelper.cs" />
+    <Compile Include="AspNet\Database\DatabaseHelper.cs" />
     <Compile Include="ClassNames.cs" />
     <Compile Include="CommonCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="AspNet\AssemblyFile\Abp.Application\Sub\CreateFilteredQuery.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\CreateInputDto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IMgmtAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\AppService.cst" />

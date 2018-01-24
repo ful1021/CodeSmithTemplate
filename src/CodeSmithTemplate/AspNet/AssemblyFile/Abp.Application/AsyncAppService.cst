@@ -13,13 +13,13 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = GetProperties(assType);
-var getAllInputColumns = GetAllInputColumns(entityColumns);
-var pktype = GetPropertyType(assType, names.PkName);
-var pkDeaultValueString = GetPropertyDefaultValueString(assType, names.PkName);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
+var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
+var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, names.PkName);
 
-var entityDateTimeProps = GetDateTimeProperties(getAllInputColumns);
+var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
 
 %>
 using System;
@@ -70,10 +70,10 @@ namespace <%=assType.Namespace %>
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in getAllInputColumns){%>
-                <%if(GetCSharpTypeByProp(col)=="DateTime"){ %>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="DateTime"){ %>
                 .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 <% continue;}%>
-                <%if(GetCSharpTypeByProp(col)=="string"){ %>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="string"){ %>
                 .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <% continue;}%>
                 <%if(col.PropertyType.IsValueType){ %>

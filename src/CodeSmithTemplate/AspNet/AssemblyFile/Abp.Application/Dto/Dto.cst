@@ -13,10 +13,10 @@
 <%@ Import Namespace="System.Reflection" %>
 <%
 var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
-var assType = GetAssemblyType(names.CoreDllFile, EntityName);
-var pktype = GetPropertyType(assType, names.PkName);
-var entityColumns = GetProperties(assType);
-var dtoColumns = GetDtoProperties(entityColumns);
+var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
+var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
+var entityColumns = AssemblyFileHelper.GetProperties(assType);
+var dtoColumns = AssemblyFileHelper.GetDtoProperties(entityColumns);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -35,7 +35,7 @@ namespace <%=assType.Namespace %>.Dto
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>
-        public <%=GetCSharpNullableTypeByProp(col) %> <%=col.Name %> { get; set; }
+        public <%=AssemblyFileHelper.GetCSharpNullableTypeByProp(col) %> <%=col.Name %> { get; set; }
         
         <%}%>
     }    
