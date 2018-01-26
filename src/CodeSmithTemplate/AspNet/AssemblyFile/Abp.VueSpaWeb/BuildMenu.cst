@@ -12,7 +12,7 @@
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName, VueSpaWebPageName);
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName, VueSpaWebPageName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 
 %>
@@ -20,11 +20,11 @@ var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 
 //放到 Web目录  \App_Start\Navigation 目录，PageNames.cs 
 
-public const string <%=EntityName %> = "<%=PermissionModuleName %>.<%=EntityName %>";
+public const string <%=EntityName %> = "<%=ModuleName %>.<%=EntityName %>";
 
 
 //放到 Core目录 \Authorization 目录  ScmAuthorizationProvider.cs （如果存在则不用添加，只需要第一次添加）
-BuilderUtils.Build(context, "<%=PermissionModuleName %>");
+BuilderUtils.Build(context, "<%=ModuleName %>");
 
 //放到 Core目录  \Authorization\Builders\Permissions 目录  xxx.json
 
@@ -39,7 +39,7 @@ BuilderUtils.Build(context, "<%=PermissionModuleName %>");
 //放到 Web目录  \App_Start\Navigation 目录，SpaNavigationProvider.cs 
 
 .AddItem(new MenuItemDefinition(
-        PageNames.App.<%=PermissionModuleName %>.<%=EntityName %>,
+        PageNames.App.<%=ModuleName %>.<%=EntityName %>,
         new FixedLocalizableString("<%=AssemblyFileHelper.GetClassSummary(assType) %>"),
         url: "/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>",
         icon: "icon-nutrients-management",

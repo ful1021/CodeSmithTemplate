@@ -6,7 +6,7 @@
 
 <%@ Property Name="ProjectName" Type="System.String" Category="01.数据源" Description="项目名称" Default="Boss.Microboss" %>
 <%@ Property Name="EntityName" Type="System.String" Category="01.数据源" Description="实体名称" Default="InventoryAdjustment" %>
-<%@ Property Name="PermissionModuleName" Type="System.String" Category="01.数据源" Description="权限模块名称" Default="ProductCenter" %>
+<%@ Property Name="ModuleName" Type="System.String" Category="01.数据源" Description="模块名称" Default="ProductCenter" %>
 
 <%@ Assembly Src="../../../ClassNames.cs" %>
 <%@ Assembly Name="SchemaExplorer" %>

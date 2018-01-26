@@ -12,7 +12,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
@@ -33,7 +33,7 @@ using <%=ProjectName %>.Authorization;
 using <%=ProjectName %>.Extensions;
 using <%=assType.Namespace %>.Dto;
 
-namespace <%=ProjectName %>.Web.Areas<%=assType.Namespace.Replace(ProjectName,"") %>.Controllers
+namespace <%=ProjectName %>.Web.Areas.<%=ModuleName %>.Controllers
 {
     /// <summary>
     /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  控制器

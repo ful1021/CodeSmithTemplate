@@ -11,7 +11,7 @@
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName);
+var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
 %>
