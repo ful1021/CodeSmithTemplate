@@ -220,29 +220,6 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         }
 
         /// <summary>
-        /// 得到反射字段 类型
-        /// </summary>
-        /// <returns></returns>
-        public static string GetPropertyDefaultValueString(Type type, string propertyName = "Id")
-        {
-            var props = GetProperties(type);
-            var propInfo = props.FirstOrDefault(a => a.Name == propertyName);
-            if (propInfo != null)
-            {
-                var ctype = GetCSharpTypeByProp(propInfo);
-                if (ctype.Equals("Guid", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return "Guid.Empty";
-                }
-                else
-                {
-                    return "0";
-                }
-            }
-            return "";
-        }
-
-        /// <summary>
         /// 判断当前表，是否存在列name
         /// </summary>
         /// <param name="tab"></param>
@@ -383,7 +360,13 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             }
             return type;
         }
-
+        
+        public static object DefaultValue(PropertyInfo prop)
+        {
+            //var result = default(Type);
+            var result = prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null;
+            return result;
+        }
         #endregion 类型处理
 
         #region Helper方法

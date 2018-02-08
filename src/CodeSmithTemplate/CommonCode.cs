@@ -359,6 +359,74 @@ namespace CodeSmithTemplate
         {
             return list.Any(a => item.Equals(a, StringComparison.CurrentCultureIgnoreCase));
         }
+
+        /// <summary>
+        /// 对象 转换为DateTime类型或者null，不成功返回null
+        /// </summary>
+        public static DateTime? TryToDateTimeOrNull(object str)
+        {
+            DateTime? result = null;
+            if (str != null && !string.IsNullOrWhiteSpace(str.ToString()))
+            {
+                DateTime tmp;
+                if (DateTime.TryParse(str.ToString(), out tmp))
+                {
+                    result = tmp;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 对象 转换为DateTime类型或者null，不成功返回null
+        /// </summary>
+        public static DateTime TryToDateTime(object str, string defaultResult = null)
+        {
+            var result = TryToDateTimeOrNull(str);
+            if (result == null && !string.IsNullOrWhiteSpace(defaultResult))
+            {
+                DateTime tmp;
+                if (DateTime.TryParse(defaultResult, out tmp))
+                {
+                    result = tmp;
+                }
+            }
+            return result ?? DateTime.MinValue;
+        }
+
+        /// <summary>
+        /// 对象 转换为 decimal 类型
+        /// </summary>
+        public static decimal TryToDecimal(object str, decimal defaultResult = 0)
+        {
+            var result = defaultResult;
+            if (str != null && !string.IsNullOrWhiteSpace(str.ToString()))
+            {
+                decimal tmp;
+                if (decimal.TryParse(str.ToString(), out tmp))
+                {
+                    result = tmp;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 对象 转换为 int 类型
+        /// </summary>
+        public static int TryToInt(object str, int defaultResult = 0)
+        {
+            var result = defaultResult;
+            if (str != null && !string.IsNullOrWhiteSpace(str.ToString()))
+            {
+                int tmp;
+                if (int.TryParse(str.ToString(), out tmp))
+                {
+                    result = tmp;
+                }
+            }
+            return result;
+        }
         #endregion Helper方法
 
         /// <summary>

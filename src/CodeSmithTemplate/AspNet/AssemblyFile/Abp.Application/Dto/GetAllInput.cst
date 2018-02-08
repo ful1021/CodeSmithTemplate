@@ -43,6 +43,11 @@ namespace <%=assType.Namespace %>.Dto
         /// </summary>       
         <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
         public DateTime[] <%=col.Name %> { get; set; }
+        
+        <% continue;}%>
+        <%if(TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
+        public NullableNumberRange <%=col.Name %> { get; set; }
+        
         <% continue;}%>
         public <%=AssemblyFileHelper.GetCSharpAppServiceInputType(col) %> <%=col.Name %> { get; set; }
         

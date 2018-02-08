@@ -18,8 +18,6 @@ var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, Enti
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
-var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, names.PkName);
 
 var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
 
@@ -40,10 +38,17 @@ var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputCo
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in getAllInputColumns){%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
                 .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
+                
                 <% continue;}%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="string"){ %>
+                <%if(TryToInt(AssemblyFileHelper.DefaultValue(col),-1)==0){ %>
+                
+                .WhereIf(input.<%=col.Name %>?.Start != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.Start.Value)
+                .WhereIf(input.<%=col.Name %>?.End != null, a => a.<%=col.Name %> >= input.<%=col.Name %>.End.Value)
+                
+                <% continue;}%>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("string")){ %>
                 .WhereIf(!input.<%=col.Name %>.IsNullOrWhiteSpace(), a => a.<%=col.Name %>.Contains(input.<%=col.Name %>))
                 <% continue;}%>
                 <%if(col.PropertyType.IsValueType){ %>

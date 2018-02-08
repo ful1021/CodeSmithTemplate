@@ -19,7 +19,7 @@ var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
 var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
-var pkDeaultValueString = AssemblyFileHelper.GetPropertyDefaultValueString(assType, names.PkName);
+
 %>
 using System;
 using System.Linq;
