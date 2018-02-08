@@ -40,7 +40,7 @@ var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputCo
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
                 <%foreach (var col in getAllInputColumns){%>
-                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="DateTime"){ %>
+                <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>
                 .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 <% continue;}%>
                 <%if(AssemblyFileHelper.GetCSharpTypeByProp(col)=="string"){ %>
