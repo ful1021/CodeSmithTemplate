@@ -1,5 +1,7 @@
 ﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
 <%@ Register Template="../Helper/AssemblyFileProperty.cst" Name="AssemblyFileProperty" MergeProperties="True" %>  
+<%@ Register Template="SubTemplate/Constructor.cst" Name="Constructor" MergeProperties="True" %>  
+
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Linq" %>
@@ -12,7 +14,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
+var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
 var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 var entityColumns = AssemblyFileHelper.GetProperties(assType);
 var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
@@ -37,15 +39,8 @@ namespace <%=assType.Namespace %>
     /// </summary>
     public partial class <%=names.AppServiceName %> : <%=names.BaseAppServiceName %>, I<%=names.AppServiceName %>
     {
-        private readonly IRepository<<%=EntityName %>, <%=pktype %>> _<%=names.RepositoryName %>;
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="<%=names.RepositoryName %>"></param>
-        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
-        {
-            _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
-        }
-        
+<%
+RenderOtherTemplateResponse<Constructor>();
+%>
     }
 }

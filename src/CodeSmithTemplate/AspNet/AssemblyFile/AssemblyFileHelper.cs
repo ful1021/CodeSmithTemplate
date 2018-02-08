@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -134,11 +135,11 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 {
                     continue;
                 }
-                if (CommonCode.IsAbpCreationAudited(col))
+                if (IsAbpFullAuditedEntity(col))
                 {
                     continue;
                 }
-                if (CommonCode.IsList(col))
+                if (IsList(col))
                 {
                     continue;
                 }
@@ -194,7 +195,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             List<PropertyInfo> list = new List<PropertyInfo>();
             foreach (var col in dtos)
             {
-                if (CommonCode.IsAbpValueObject(col))
+                if (IsAbpValueObject(col))
                 {
                     continue;
                 }
@@ -373,7 +374,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         {
             var propTypeFullName = prop.PropertyType.FullName;
             var type = GetCSharpNullableTypeByProp(prop);
-            if (type != "string" && !CommonCode.IsAbpValueObject(prop) && !type.Contains("[]"))
+            if (type != "string" && !IsAbpValueObject(prop) && !type.Contains("[]"))
             {
                 if (!type.EndsWith("?"))
                 {
@@ -384,5 +385,61 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         }
 
         #endregion 类型处理
+
+        #region Helper方法
+
+        public static bool IsList(PropertyInfo prop)
+        {
+            var fullType = prop.PropertyType.FullName;
+            return fullType.Contains("System.Collections.Generic.ICollection") || fullType.Contains("System.Collections.Generic.List");
+        }
+
+        public static bool IsAbpValueObject(PropertyInfo prop)
+        {
+            var fullType = prop.PropertyType.BaseType;
+            if (fullType != null)
+            {
+                if (!string.IsNullOrWhiteSpace(fullType.FullName))
+                {
+                    return fullType.FullName.Contains("Abp.Domain.Values.ValueObject");
+                }
+            }
+            return false;
+        }
+
+        public static bool IsAbpFullAuditedEntity(PropertyInfo prop)
+        {
+            return CommonCode.IsIn(prop.Name, "CreatorUserId", "CreationTime", "LastModifierUserId", "LastModificationTime", "IsDeleted", "DeleterUserId", "DeletionTime");
+        }
+        #endregion
+
+        /// <summary>
+        /// 获取 AssemblyFile 各命名
+        /// </summary>
+        public static ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
+        {
+            var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
+            return new ClassNames()
+            {
+                PkName = "Id",
+                AppServiceName = entityName + "AppService",
+                MgmtAppServiceName = entityName + "MgmtAppService",
+                BaseAppServiceName = entityName + "BaseAppService",
+                RepositoryName = CommonCode.ToFirstLetterCamel(entityName) + "Repository",
+                DtoName = entityName + "Dto",
+                QueryDtoName = entityName + "QueryDto",
+                GetAllInputName = entityName + "GetAllInput",
+                CreateOrUpdateInputName = entityName + "Dto",//"CreateOrUpdateInput",
+                CreateInputName = entityName + "CreateInput",
+                UpdateInputName = entityName + "Dto",// "UpdateInput",
+                ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
+                CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
+                PermissionPrefix = permissionPrefix,
+                VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? CommonCode.ToFirstLetterCamel(entityName) : vueSpaWebPageName,
+                VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
+                WebControllerName = entityName + "Controller",
+                AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
+            };
+        }
     }
 }

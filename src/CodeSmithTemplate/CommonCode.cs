@@ -359,61 +359,7 @@ namespace CodeSmithTemplate
         {
             return list.Any(a => item.Equals(a, StringComparison.CurrentCultureIgnoreCase));
         }
-
-        public static bool IsList(PropertyInfo prop)
-        {
-            var fullType = prop.PropertyType.FullName;
-            return fullType.Contains("System.Collections.Generic.ICollection") || fullType.Contains("System.Collections.Generic.List");
-        }
-
-        public static bool IsAbpValueObject(PropertyInfo prop)
-        {
-            var fullType = prop.PropertyType.BaseType;
-            if (fullType != null)
-            {
-                if (!string.IsNullOrWhiteSpace(fullType.FullName))
-                {
-                    return fullType.FullName.Contains("Abp.Domain.Values.ValueObject");
-                }
-            }
-            return false;
-        }
-
-        public static bool IsAbpCreationAudited(PropertyInfo prop)
-        {
-            return IsIn(prop.Name, "CreatorUserId", "CreationTime", "LastModifierUserId", "LastModificationTime", "IsDeleted", "DeleterUserId", "DeletionTime");
-        }
-
         #endregion Helper方法
-
-        /// <summary>
-        /// 获取 AssemblyFile 各命名
-        /// </summary>
-        public ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
-        {
-            var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
-            return new ClassNames()
-            {
-                PkName = "Id",
-                AppServiceName = entityName + "AppService",
-                MgmtAppServiceName = entityName + "MgmtAppService",
-                BaseAppServiceName = entityName + "BaseAppService",
-                RepositoryName = ToFirstLetterCamel(entityName) + "Repository",
-                DtoName = entityName + "Dto",
-                QueryDtoName = entityName + "QueryDto",
-                GetAllInputName = entityName + "GetAllInput",
-                CreateOrUpdateInputName = entityName + "Dto",//"CreateOrUpdateInput",
-                CreateInputName = entityName + "CreateInput",
-                UpdateInputName = entityName + "Dto",// "UpdateInput",
-                ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
-                CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
-                PermissionPrefix = permissionPrefix,
-                VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? ToFirstLetterCamel(entityName) : vueSpaWebPageName,
-                VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
-                WebControllerName = entityName + "Controller",
-                AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
-            };
-        }
 
         /// <summary>
         /// App 类型

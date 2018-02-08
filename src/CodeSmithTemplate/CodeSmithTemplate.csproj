@@ -59,6 +59,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\ConstructorWithPermission.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\Constructor.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\CreateFilteredQuery.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\CreateInputDto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IMgmtAppService.cst" />

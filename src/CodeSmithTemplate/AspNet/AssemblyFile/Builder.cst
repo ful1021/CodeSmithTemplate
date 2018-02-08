@@ -18,7 +18,7 @@
 // 设定输出文件的顶级根目录
 if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
 
-ClassNames names = GetAssemblyFileNames(DllFolder, ProjectName, EntityName, PermissionModuleName,VueSpaWebPageName);
+ClassNames names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName,VueSpaWebPageName);
 Type assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
 if(AppServiceType == AppServiceType.纯管理后台应用)
 {
