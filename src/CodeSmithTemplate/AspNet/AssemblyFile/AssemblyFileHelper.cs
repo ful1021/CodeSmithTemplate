@@ -293,6 +293,10 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 {
                     return "Guid?";
                 }
+                else if (prop.PropertyType.IsValueType)
+                {
+
+                }
             }
             return type;
         }
@@ -360,7 +364,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             }
             return type;
         }
-        
+
         public static object DefaultValue(PropertyInfo prop)
         {
             //var result = default(Type);

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing.Design;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows.Forms.Design;
 using CodeSmith.Engine;
 using SchemaExplorer;
@@ -427,6 +424,7 @@ namespace CodeSmithTemplate
             }
             return result;
         }
+
         #endregion Helper方法
 
         /// <summary>

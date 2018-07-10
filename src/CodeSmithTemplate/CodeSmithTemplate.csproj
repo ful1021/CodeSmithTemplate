@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{685A7F50-7D4A-4886-B741-596E7292AFCD}</ProjectGuid>
+    <ProjectGuid>{0FDAA6F2-02C5-4CB8-A20C-0D197FD34C6F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CodeSmithTemplate</RootNamespace>
     <AssemblyName>CodeSmithTemplate</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,45 +35,42 @@
     <Reference Include="CodeSmith.Core, Version=1.1.0.0, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
     <Reference Include="CodeSmith.CustomProperties, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
     <Reference Include="CodeSmith.Engine, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
-    <Reference Include="policy.1.0.CodeSmith.Core, Version=7.1.0.15317, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
     <Reference Include="SchemaExplorer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TaskDialog, Version=1.0.4533.35818, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSComment.cs" />
     <Compile Include="AspNet\AssemblyFile\AssemblyFileHelper.cs" />
+    <Compile Include="AspNet\AssemblyFile\blqw.CSComment\CSComment.cs" />
     <Compile Include="AspNet\Database\DatabaseHelper.cs" />
     <Compile Include="ClassNames.cs" />
     <Compile Include="CommonCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\ConstructorWithPermission.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\Constructor.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\CreateFilteredQuery.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\Dto\CreateInputDto.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\IMgmtAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\AppService.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\MgmtAppService.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\BaseAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\AsyncAppService.cst" />
-    <None Include="AspNet\AssemblyFile\Abp.Application\Dto\GetAllInput.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\BaseAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\Dto\CreateInputDto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\Dto.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\Dto\GetAllInput.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\Dto\QueryDto.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IAppService.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Application\IAsyncAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\IMgmtAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\MgmtAppService.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\Constructor.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\ConstructorWithPermission.cst" />
+    <None Include="AspNet\AssemblyFile\Abp.Application\SubTemplate\CreateFilteredQuery.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\BuildMenu.cst" />
     <None Include="AspNet\AssemblyFile\Abp.VueSpaWeb\Index.cst" />
     <None Include="AspNet\AssemblyFile\Abp.Web\Controller.cst" />
@@ -82,11 +80,4 @@
     <None Include="AspNet\AssemblyFile\Helper\GenerateLayerProperty.cst" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

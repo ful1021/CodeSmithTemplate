@@ -37,8 +37,13 @@ namespace <%=assType.Namespace %>
     /// </summary>
     public partial class <%=names.BaseAppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>
     {
-<%
-RenderOtherTemplateResponse<Constructor>();
-%>
+        private readonly IRepository<<%=EntityName %>, <%=pktype %>> _<%=names.RepositoryName %>;
+        /// <summary>
+        /// 构造函数
+        /// </summary>        
+        public <%=names.BaseAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
+        {
+            _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
+        }
     }
 }
