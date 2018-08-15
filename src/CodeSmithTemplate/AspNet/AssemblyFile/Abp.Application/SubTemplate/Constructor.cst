@@ -14,21 +14,14 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
-
-var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
-
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 
-        private readonly IRepository<<%=EntityName %>, <%=pktype %>> _<%=names.RepositoryName %>;
+        private readonly IRepository<<%=N.EntityName %>, <%=N.PkType %>> _<%=N.RepositoryName %>;
         /// <summary>
         /// 构造函数
         /// </summary>        
-        public <%=names.AppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
+        public <%=N.AppServiceName %>(IRepository<<%=N.EntityName %>, <%=N.PkType %>> <%=N.RepositoryName %>) : base(<%=N.RepositoryName %>)
         {
-            _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
+            _<%=N.RepositoryName %> = <%=N.RepositoryName %>;
         }

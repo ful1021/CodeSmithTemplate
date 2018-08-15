@@ -12,14 +12,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
-
-var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
-
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 using System;
 using System.Linq;
@@ -28,30 +21,30 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
-using <%=ProjectName %>.Authorization;
-using <%=ProjectName %>.Extensions;
-using <%=assType.Namespace %>.Dto;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Authorization;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Extensions;
+using <%=N.EntityNamespace %>.Dto;
 
 namespace <%=ProjectName %>.Web.Areas.<%=ModuleName %>.Controllers
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  控制器
+    /// <%=N.EntitySummary %>  控制器
     /// </summary>
-    public class <%=names.WebControllerName %> : ScmControllerBase
+    public class <%=N.WebControllerName %> : ScmControllerBase
     {
-        private readonly I<%=names.MgmtAppServiceName %> _<%=ToFirstLetterCamel(names.MgmtAppServiceName) %>;
+        private readonly I<%=N.MgmtAppServiceName %> _<%=ToFirstLetterCamel(N.MgmtAppServiceName) %>;
         /// <summary>
         /// 构造函数
         /// </summary>
-        public <%=names.WebControllerName %>(I<%=names.MgmtAppServiceName %> <%=ToFirstLetterCamel(names.MgmtAppServiceName) %>)
+        public <%=N.WebControllerName %>(I<%=N.MgmtAppServiceName %> <%=ToFirstLetterCamel(N.MgmtAppServiceName) %>)
         {
-            _<%=ToFirstLetterCamel(names.MgmtAppServiceName) %> = <%=ToFirstLetterCamel(names.MgmtAppServiceName) %>;
+            _<%=ToFirstLetterCamel(N.MgmtAppServiceName) %> = <%=ToFirstLetterCamel(N.MgmtAppServiceName) %>;
         }
         
         [DisableAuditing]
-        public async Task<FileResult> ExportExcel(<%=names.GetAllInputName %> input)
+        public async Task<FileResult> ExportExcel(<%=N.GetAllInputName %> input)
         {
-            var list = await _<%=ToFirstLetterCamel(names.MgmtAppServiceName) %>.GetAll(input);
+            var list = await _<%=ToFirstLetterCamel(N.MgmtAppServiceName) %>.GetAll(input);
             var stream = list.Items.ToExcel("货主库存", new[] { "仓库编码", "货主编码", "商品编码", "可用数量" }
             , a => a.WarehouseCode
             , a => a.CargoOwnerCode

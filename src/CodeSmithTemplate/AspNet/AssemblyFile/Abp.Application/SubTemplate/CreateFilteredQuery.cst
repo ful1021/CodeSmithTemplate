@@ -14,13 +14,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-
-var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
-
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 
         /// <summary>
@@ -28,16 +22,16 @@ var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputCo
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        protected override IQueryable<<%=EntityName %>> CreateFilteredQuery(<%=names.GetAllInputName %> input)
+        protected override IQueryable<<%=N.EntityName %>> CreateFilteredQuery(<%=N.GetAllInputName %> input)
         {
             //var filters = input.Filter.ToStringArray();
-            <%foreach(var col in entityDateTimeProps) {%>
+            <%foreach(var col in N.EntityDateTimeProps) {%>
             var <%=ToFirstLetterCamel(col.Name) %>Range = input.<%=col.Name %>.ToDateTimeRange();
             <%} %>
             
             return base.CreateFilteredQuery(input)
                 //.WhereIf(filters.Any(), a => a.BizNo.Contains(input.Filter) || filters.Contains(a.BizNo))
-                <%foreach (var col in getAllInputColumns){%>
+                <%foreach (var col in N.GetAllInputColumns){%>
                 <%if(AssemblyFileHelper.GetCSharpTypeByProp(col).Contains("DateTime")){ %>                
                 .WhereIf(<%=ToFirstLetterCamel(col.Name) %>Range != null, d => d.<%=col.Name %> >= <%=ToFirstLetterCamel(col.Name) %>Range.StartTime && d.<%=col.Name %> <= <%=ToFirstLetterCamel(col.Name) %>Range.EndTime)
                 

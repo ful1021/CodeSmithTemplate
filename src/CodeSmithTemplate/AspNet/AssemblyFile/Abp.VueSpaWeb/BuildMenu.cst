@@ -12,9 +12,7 @@
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName, VueSpaWebPageName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 
 
@@ -30,7 +28,7 @@ BuilderUtils.Build(context, "<%=ModuleName %>");
 
 {
 "name": "<%=EntityName %>Management",
-"displayName": "<%=AssemblyFileHelper.GetClassSummary(assType) %>",
+"displayName": "<%=N.EntitySummary %>",
 "defaultPermission": true
 }
         
@@ -40,10 +38,10 @@ BuilderUtils.Build(context, "<%=ModuleName %>");
 
 .AddItem(new MenuItemDefinition(
         PageNames.App.<%=ModuleName %>.<%=EntityName %>,
-        new FixedLocalizableString("<%=AssemblyFileHelper.GetClassSummary(assType) %>"),
-        url: "/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>",
+        new FixedLocalizableString("<%=N.EntitySummary %>"),
+        url: "/<%=VueSpaWebPagePath %>/<%=N.VueWebPageName %>",
         icon: "icon-nutrients-management",
-        requiredPermissionName: <%=names.AppServicePermissionPrefix %>
+        requiredPermissionName: <%=N.AppServicePermissionPrefix %>
     )
 )
 
@@ -53,12 +51,12 @@ BuilderUtils.Build(context, "<%=ModuleName %>");
 
 {
 
-	path: '/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>',
-	name: "<%=names.VueWebPageName %>",
+	path: '/<%=VueSpaWebPagePath %>/<%=N.VueWebPageName %>',
+	name: "<%=N.VueWebPageName %>",
 	meta: {
-		title: "<%=AssemblyFileHelper.GetClassSummary(assType) %>"
+		title: "<%=N.EntitySummary %>"
 	},
-	component: resolve => require(['../views/<%=VueSpaWebPagePath %>/<%=names.VueWebPageName %>.vue'], function (component) {
+	component: resolve => require(['../views/<%=VueSpaWebPagePath %>/<%=N.VueWebPageName %>.vue'], function (component) {
 		resolve(modules.createQueryVueModule(component));
 	})
 }, 

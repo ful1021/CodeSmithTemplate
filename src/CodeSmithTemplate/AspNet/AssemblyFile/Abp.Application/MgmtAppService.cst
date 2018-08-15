@@ -15,13 +15,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-
-var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
-
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 using System;
 using System.Linq;
@@ -30,17 +24,17 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
-using <%=ProjectName %>.Authorization;
-using <%=ProjectName %>.Extensions;
-using <%=assType.Namespace %>.Dto;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Authorization;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Extensions;
+using <%=N.EntityNamespace %>.Dto;
 
-namespace <%=assType.Namespace %>
+namespace <%=N.EntityNamespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
+    /// <%=N.EntitySummary %>  服务实现
     /// </summary>
     [AbpAuthorize]
-    public partial class <%=names.MgmtAppServiceName %> : <%=names.BaseAppServiceName %>, I<%=names.MgmtAppServiceName %>
+    public partial class <%=N.MgmtAppServiceName %> : <%=N.BaseAppServiceName %>, I<%=N.MgmtAppServiceName %>
     {
 <%
 RenderOtherTemplateResponse<ConstructorWithPermission>();

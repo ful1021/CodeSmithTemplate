@@ -12,32 +12,29 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.Reflection" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 
-namespace <%=assType.Namespace %>.Dto
+namespace <%=N.EntityNamespace %>.Dto
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>   获取所有 输入参数
+    /// <%=N.EntitySummary %>   获取所有 输入参数
     /// </summary>
-    public class <%=names.GetAllInputName %> : PagedQueryInput
+    public class <%=N.GetAllInputName %> : PagedQueryInput
     {
         /// <summary>
         /// 构造函数
         /// </summary>
-        public <%=names.GetAllInputName %>()
+        public <%=N.GetAllInputName %>()
         {
-            <%if(AssemblyFileHelper.IsExistsColByProp(entityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
+            <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
         }
         
-        <%foreach (var col in getAllInputColumns){%>        
+        <%foreach (var col in N.GetAllInputColumns){%>        
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>       

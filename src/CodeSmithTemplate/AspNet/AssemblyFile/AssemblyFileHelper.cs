@@ -430,7 +430,8 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         /// <summary>
         /// 初始化模板
         /// </summary>
-        public static ClassNames Init<T>(T comm) where T : CommonCode
+        public static ClassNames Init(CommonCode comm)
+        //public static ClassNames Init<T>(CommonCode comm) where T : CommonCode
         {
             string dllFolder = CommonCode.TryToString(comm.GetProperty("DllFolder"));
             string nameSpaceName = CommonCode.TryToString(comm.GetProperty("ProjectName"));

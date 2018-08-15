@@ -136,14 +136,7 @@ namespace CodeSmithTemplate
         }
 
 
-        public static string TryToString(object source)
-        {
-            if (source != null)
-            {
-                return source.ToString();
-            }
-            return "";
-        }
+
 
         #endregion 字符串扩展方法
 
@@ -429,8 +422,7 @@ namespace CodeSmithTemplate
             var result = defaultResult;
             if (str != null && !string.IsNullOrWhiteSpace(str.ToString()))
             {
-                int tmp;
-                if (int.TryParse(str.ToString(), out tmp))
+                if (int.TryParse(str.ToString(), out int tmp))
                 {
                     result = tmp;
                 }
@@ -438,6 +430,17 @@ namespace CodeSmithTemplate
             return result;
         }
 
+        /// <summary>
+        /// 对象 转换为 string 类型
+        /// </summary>
+        public static string TryToString(object source)
+        {
+            if (source != null)
+            {
+                return source.ToString();
+            }
+            return "";
+        }
         #endregion Helper方法
 
         /// <summary>

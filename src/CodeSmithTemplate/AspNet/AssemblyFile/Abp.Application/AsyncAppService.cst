@@ -15,14 +15,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
-
-var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(getAllInputColumns);
-
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 using System;
 using System.Linq;
@@ -31,16 +24,16 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
-using <%=ProjectName %>.Authorization;
-using <%=ProjectName %>.Extensions;
-using <%=assType.Namespace %>.Dto;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Authorization;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Extensions;
+using <%=N.EntityNamespace %>.Dto;
 
-namespace <%=assType.Namespace %>
+namespace <%=N.EntityNamespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
+    /// <%=N.EntitySummary %>  服务实现
     /// </summary>
-    public partial class <%=names.AppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>, I<%=names.AppServiceName %>
+    public partial class <%=N.AppServiceName %> : AsyncCrudAppServiceBase<<%=N.EntityName %>, <%=N.QueryDtoName %>, <%=N.PkType %>, <%=N.GetAllInputName %>, <%=N.CreateInputName %>, <%=N.UpdateInputName %>>, I<%=N.AppServiceName %>
     {
 <%
 RenderOtherTemplateResponse<ConstructorWithPermission>();

@@ -13,11 +13,7 @@
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var entityColumns = AssemblyFileHelper.GetProperties(assType);
-var getAllInputColumns = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 using System;
 using System.Linq;
@@ -26,24 +22,24 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
-using <%=ProjectName %>.Authorization;
-using <%=ProjectName %>.Extensions;
-using <%=assType.Namespace %>.Dto;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Authorization;
+using <%=N.CompanyName %>.<%=N.ProjectTemplateName %>.Extensions;
+using <%=N.EntityNamespace %>.Dto;
 
-namespace <%=assType.Namespace %>
+namespace <%=N.EntityNamespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务实现
+    /// <%=N.EntitySummary %>  服务实现
     /// </summary>
-    public partial class <%=names.BaseAppServiceName %> : AsyncCrudAppServiceBase<<%=EntityName %>, <%=names.QueryDtoName %>, <%=pktype %>, <%=names.GetAllInputName %>, <%=names.CreateInputName %>, <%=names.UpdateInputName %>>
+    public partial class <%=N.BaseAppServiceName %> : AsyncCrudAppServiceBase<<%=N.EntityName %>, <%=N.QueryDtoName %>, <%=N.PkType %>, <%=N.GetAllInputName %>, <%=N.CreateInputName %>, <%=N.UpdateInputName %>>
     {
-        private readonly IRepository<<%=EntityName %>, <%=pktype %>> _<%=names.RepositoryName %>;
+        private readonly IRepository<<%=N.EntityName %>, <%=N.PkType %>> _<%=N.RepositoryName %>;
         /// <summary>
         /// 构造函数
         /// </summary>        
-        public <%=names.BaseAppServiceName %>(IRepository<<%=EntityName %>, <%=pktype %>> <%=names.RepositoryName %>) : base(<%=names.RepositoryName %>)
+        public <%=N.BaseAppServiceName %>(IRepository<<%=N.EntityName %>, <%=N.PkType %>> <%=N.RepositoryName %>) : base(<%=N.RepositoryName %>)
         {
-            _<%=names.RepositoryName %> = <%=names.RepositoryName %>;
+            _<%=N.RepositoryName %> = <%=N.RepositoryName %>;
         }
     }
 }

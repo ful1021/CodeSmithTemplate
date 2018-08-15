@@ -11,43 +11,41 @@
 <%@ Import Namespace="CodeSmithTemplate.AspNet.AssemblyFile" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var assType = AssemblyFileHelper.GetAssemblyType(names.CoreDllFile, EntityName);
-var pktype = AssemblyFileHelper.GetPropertyType(assType, names.PkName);
+ClassNames N = AssemblyFileHelper.Init(this);
 %>
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using <%=assType.Namespace %>.Dto;
+using <%=N.EntityNamespace %>.Dto;
 
-namespace <%=assType.Namespace %>
+namespace <%=N.EntityNamespace %>
 {
     /// <summary>
-    /// <%=AssemblyFileHelper.GetClassSummary(assType) %>  服务契约
+    /// <%=N.EntitySummary %>  服务契约
     /// </summary>
-    public partial interface I<%=names.AppServiceName %> : IApplicationService
+    public partial interface I<%=N.AppServiceName %> : IApplicationService
     {
         /// <summary>
         /// 获取分页列表
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<PagedResultDto<<%=names.QueryDtoName %>>> GetAll(<%=names.GetAllInputName %> input);
+        Task<PagedResultDto<<%=N.QueryDtoName %>>> GetAll(<%=N.GetAllInputName %> input);
 
         /// <summary>
         /// 获取详细
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<<%=names.QueryDtoName %>> Get(EntityDto<<%=pktype %>> input);
+        Task<<%=N.QueryDtoName %>> Get(EntityDto<<%=N.PkType %>> input);
         
         /// <summary>
         /// 删除
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Delete(EntityDto<<%=pktype %>> input);
+        Task Delete(EntityDto<<%=N.PkType %>> input);
     }
 }
