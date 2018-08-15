@@ -112,11 +112,14 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
 
         private static Type GetTypeFromCache(string key)
         {
-            Type result;
-            if (_typeList.TryGetValue(key, out result))
+            if (_typeList.TryGetValue(key, out Type result))
+            {
                 return result;
+            }
             else
+            {
                 return null;
+            }
         }
 
         #endregion Assembly
@@ -427,9 +430,13 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         /// <summary>
         /// 初始化模板
         /// </summary>
-        public static ClassNames Init(CommonCode comm, string dllFolder, string nameSpaceName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
+        public static ClassNames Init<T>(T comm) where T : CommonCode
         {
-            //comm.PropertiesLoaded
+            string dllFolder = CommonCode.TryToString(comm.GetProperty("DllFolder"));
+            string nameSpaceName = CommonCode.TryToString(comm.GetProperty("ProjectName"));
+            string entityName = CommonCode.TryToString(comm.GetProperty("EntityName"));
+            string permissionModuleName = CommonCode.TryToString(comm.GetProperty("ModuleName"));
+            string vueSpaWebPageName = CommonCode.TryToString(comm.GetProperty("VueSpaWebPageName"));
             var names = GetAssemblyFileNames(dllFolder, nameSpaceName, entityName, permissionModuleName, vueSpaWebPageName);
             return names;
         }
@@ -453,8 +460,8 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             Type assType = GetAssemblyType(coreDllFile, entityName);
 
             var entityColumns = GetProperties(assType);
+            var dtoColumns = GetDtoProperties(entityColumns);
             var getAllInputColumns = GetAllInputColumns(entityColumns);
-
             var entityDateTimeProps = GetDateTimeProperties(getAllInputColumns);
 
             var pkName = "Id";
@@ -468,6 +475,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 EntitySummary = GetClassSummary(assType),
                 EntityDirectoryName = assType.Namespace.Replace(companyName + "." + projectTemplateName, "").Replace(".", "\\"),
                 EntityColumns = entityColumns,
+                DtoColumns = dtoColumns,
                 GetAllInputColumns = getAllInputColumns,
                 EntityDateTimeProps = entityDateTimeProps,
 

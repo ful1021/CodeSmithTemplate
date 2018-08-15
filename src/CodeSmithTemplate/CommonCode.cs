@@ -15,6 +15,9 @@ namespace CodeSmithTemplate
     /// </summary>
     public class CommonCode : CodeTemplate
     {
+        //[Category("01.命名")]
+        //public ClassNames N { get; set; }
+
         #region 设置公共属性
 
         private string _outputDirectory = "";
@@ -130,6 +133,16 @@ namespace CodeSmithTemplate
                 return source;
             }
             return string.Format("[{0}]", source);
+        }
+
+
+        public static string TryToString(object source)
+        {
+            if (source != null)
+            {
+                return source.ToString();
+            }
+            return "";
         }
 
         #endregion 字符串扩展方法

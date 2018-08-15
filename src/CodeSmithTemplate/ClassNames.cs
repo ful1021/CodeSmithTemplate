@@ -57,6 +57,7 @@ namespace CodeSmithTemplate
 
 
         public PropertyInfo[] EntityColumns { get; set; }
+        public PropertyInfo[] DtoColumns { get; set; }
         public PropertyInfo[] GetAllInputColumns { get; set; }
         public PropertyInfo[] EntityDateTimeProps { get; set; }
     }
