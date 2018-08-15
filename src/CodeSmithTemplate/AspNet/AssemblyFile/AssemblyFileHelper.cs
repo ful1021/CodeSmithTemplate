@@ -9,6 +9,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
     public class AssemblyFileHelper
     {
         #region GetSummary
+
         public static Dictionary<PropertyInfo, string> GetPropertiesSummary(PropertyInfo[] props)
         {
             Dictionary<PropertyInfo, string> dict = new Dictionary<PropertyInfo, string>();
@@ -65,7 +66,8 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             }
             return "";
         }
-        #endregion
+
+        #endregion GetSummary
 
         #region Assembly
 
@@ -83,6 +85,8 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             return assembly;
         }
 
+        private static SortedList<string, Type> _typeList = new SortedList<string, Type>();
+
         /// <summary>
         /// 获取反射的Assembly 类型
         /// </summary>
@@ -92,8 +96,27 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         public static Type GetAssemblyType(string dllFile, string className)
         {
             Assembly assembly = GetAssembly(dllFile);
-            var type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
+
+            string key = className;
+
+            Type type = GetTypeFromCache(key);
+            if (type == null)
+            {
+                type = assembly.GetTypes().FirstOrDefault(a => a.Name == className);
+                //添加到缓冲中
+                _typeList.Add(key, type);
+            }
+
             return type;
+        }
+
+        private static Type GetTypeFromCache(string key)
+        {
+            Type result;
+            if (_typeList.TryGetValue(key, out result))
+                return result;
+            else
+                return null;
         }
 
         #endregion Assembly
@@ -295,7 +318,6 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 }
                 else if (prop.PropertyType.IsValueType)
                 {
-
                 }
             }
             return type;
@@ -371,6 +393,7 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
             var result = prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null;
             return result;
         }
+
         #endregion 类型处理
 
         #region Helper方法
@@ -398,17 +421,56 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         {
             return CommonCode.IsIn(prop.Name, "CreatorUserId", "CreationTime", "LastModifierUserId", "LastModificationTime", "IsDeleted", "DeleterUserId", "DeletionTime");
         }
-        #endregion
+
+        #endregion Helper方法
+
+        /// <summary>
+        /// 初始化模板
+        /// </summary>
+        public static ClassNames Init(CommonCode comm, string dllFolder, string nameSpaceName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
+        {
+            //comm.PropertiesLoaded
+            var names = GetAssemblyFileNames(dllFolder, nameSpaceName, entityName, permissionModuleName, vueSpaWebPageName);
+            return names;
+        }
 
         /// <summary>
         /// 获取 AssemblyFile 各命名
         /// </summary>
-        public static ClassNames GetAssemblyFileNames(string dllFolder, string projectName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
+        public static ClassNames GetAssemblyFileNames(string dllFolder, string nameSpaceName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
         {
             var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
+
+            var companyName = nameSpaceName.Split('.').FirstOrDefault();
+            var projectTemplateName = nameSpaceName.Split('.').LastOrDefault();
+
+            var applicationAssemblyName = companyName + "." + projectTemplateName + ".Application";
+            var coreAssemblyName = companyName + "." + projectTemplateName + ".Core";
+
+            var applicationDllFile = Path.Combine(dllFolder, applicationAssemblyName + ".dll");
+            var coreDllFile = Path.Combine(dllFolder, coreAssemblyName + ".dll");
+
+            Type assType = GetAssemblyType(coreDllFile, entityName);
+
+            var entityColumns = GetProperties(assType);
+            var getAllInputColumns = GetAllInputColumns(entityColumns);
+
+            var entityDateTimeProps = GetDateTimeProperties(getAllInputColumns);
+
+            var pkName = "Id";
             return new ClassNames()
             {
-                PkName = "Id",
+                PkName = pkName,
+                PkType = GetPropertyType(assType, pkName),
+
+                EntityName = entityName,
+                EntityNamespace = assType.Namespace,
+                EntitySummary = GetClassSummary(assType),
+                EntityDirectoryName = assType.Namespace.Replace(companyName + "." + projectTemplateName, "").Replace(".", "\\"),
+                EntityColumns = entityColumns,
+                GetAllInputColumns = getAllInputColumns,
+                EntityDateTimeProps = entityDateTimeProps,
+
                 AppServiceName = entityName + "AppService",
                 MgmtAppServiceName = entityName + "MgmtAppService",
                 BaseAppServiceName = entityName + "BaseAppService",
@@ -419,10 +481,20 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 CreateOrUpdateInputName = entityName + "Dto",//"CreateOrUpdateInput",
                 CreateInputName = entityName + "CreateInput",
                 UpdateInputName = entityName + "Dto",// "UpdateInput",
-                ApplicationDllFile = Path.Combine(dllFolder, projectName + ".Application.dll"),
-                CoreDllFile = Path.Combine(dllFolder, projectName + ".Core.dll"),
+
+                ApplicationDllFile = applicationDllFile,
+                CoreDllFile = coreDllFile,
+
+                CompanyName = companyName,
+                ProjectTemplateName = projectTemplateName,
+                PermissionModuleName = permissionModuleName,
+
+                ApplicationAssemblyName = applicationAssemblyName,
+                CoreAssemblyName = coreAssemblyName,
+
                 PermissionPrefix = permissionPrefix,
                 VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? CommonCode.ToFirstLetterCamel(entityName) : vueSpaWebPageName,
+
                 VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
                 WebControllerName = entityName + "Controller",
                 AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
