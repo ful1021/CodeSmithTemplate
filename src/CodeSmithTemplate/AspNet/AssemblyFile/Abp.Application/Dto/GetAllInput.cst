@@ -31,10 +31,10 @@ namespace <%=N.EntityNamespace %>.Dto
         /// </summary>
         public <%=N.GetAllInputName %>()
         {
-            <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityColumns, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
+            <%if(AssemblyFileHelper.IsExistsColByProp(N.EntityProps, "CreationTime", true)){%>Sorting = "CreationTime DESC";<%} %>
         }
         
-        <%foreach (var col in N.GetAllInputColumns){%>        
+        <%foreach (var col in N.GetAllInputProps){%>        
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>       

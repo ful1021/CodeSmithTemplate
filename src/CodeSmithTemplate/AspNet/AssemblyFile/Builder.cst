@@ -23,7 +23,7 @@ if(AppServiceType == AppServiceType.纯管理后台应用)
 {
     var currClassTemplateName = "Abp.Application";
     var root_directory = OutputDirectory + "\\" + N.ApplicationAssemblyName + "\\";
-    var directory = root_directory + N.EntityDirectoryName ;
+    var directory = OutputDirectory + "\\" + N.ApplicationDirectoryPath + "\\";
     
     RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAsyncAppService.cst", directory, "I" + N.AppServiceName);
     RenderToFile(AppAsyncService, currClassTemplateName + "\\AsyncAppService.cst", directory, N.AppServiceName);
@@ -32,7 +32,7 @@ else if(AppServiceType == AppServiceType.混合应用)
 {
     var currClassTemplateName = "Abp.Application";
     var root_directory = OutputDirectory + "\\" + N.ApplicationAssemblyName + "\\";
-    var directory = root_directory + N.EntityDirectoryName;
+    var directory = OutputDirectory + "\\" + N.ApplicationDirectoryPath + "\\";
     
     RenderToFile(AppAsyncService, currClassTemplateName + "\\BaseAppService.cst", directory, N.BaseAppServiceName); 
     RenderToFile(AppIAsyncService, currClassTemplateName + "\\IAppService.cst", directory, "I" + N.AppServiceName);
@@ -43,7 +43,7 @@ else if(AppServiceType == AppServiceType.混合应用)
 {
     var currClassTemplateName = "Abp.Application\\Dto";
     var root_directory = OutputDirectory + "\\" + N.ApplicationAssemblyName + "\\";
-    var directory = root_directory + N.EntityDirectoryName+"\\Dto\\";
+    var directory = OutputDirectory + "\\" + N.ApplicationDirectoryPath + "\\Dto\\";
     
     RenderToFile(AppGetAllDto, currClassTemplateName + "\\GetAllInput.cst", directory, N.GetAllInputName);
     RenderToFile(AppQueryDto, currClassTemplateName + "\\QueryDto.cst", directory, N.QueryDtoName);

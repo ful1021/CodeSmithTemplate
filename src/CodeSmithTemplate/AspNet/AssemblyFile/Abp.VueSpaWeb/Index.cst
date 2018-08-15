@@ -13,33 +13,32 @@
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.Reflection" %>
 <%
-var names = AssemblyFileHelper.GetAssemblyFileNames(DllFolder, ProjectName, EntityName, ModuleName);
-var entityColumns = AssemblyFileHelper.GetPropertiesByDll(names.CoreDllFile, EntityName);
+ClassNames N = AssemblyFileHelper.Init(this);
 
 PropertyInfo[] queryDtoProps = null;
 PropertyInfo[] getAllInputProps = null;
 PropertyInfo[] createOrUpdateInputProps = null;
 if(VueSpaWebBaseAppService)
 {
-    queryDtoProps = AssemblyFileHelper.GetPropertiesByDll(names.ApplicationDllFile,names.QueryDtoName);
-    getAllInputProps = AssemblyFileHelper.GetPropertiesByDll(names.ApplicationDllFile,names.GetAllInputName);
-    createOrUpdateInputProps = AssemblyFileHelper.GetPropertiesByDll(names.ApplicationDllFile, names.DtoName);
+    queryDtoProps = AssemblyFileHelper.GetPropertiesByDll(N.ApplicationDllFile,N.QueryDtoName);
+    getAllInputProps = AssemblyFileHelper.GetPropertiesByDll(N.ApplicationDllFile,N.GetAllInputName);
+    createOrUpdateInputProps = AssemblyFileHelper.GetPropertiesByDll(N.ApplicationDllFile, N.DtoName);
 } 
 else 
 {    
-    queryDtoProps = AssemblyFileHelper.GetDtoProperties(entityColumns);
-    getAllInputProps = AssemblyFileHelper.GetAllInputColumns(entityColumns);
-    createOrUpdateInputProps = AssemblyFileHelper.GetDtoProperties(entityColumns);
+    queryDtoProps = N.DtoProps;
+    getAllInputProps = N.GetAllInputProps;
+    createOrUpdateInputProps = N.DtoProps;
 }
 var queryDtoColunms = AssemblyFileHelper.GetPropertiesSummary(queryDtoProps);
 var getAllInputColunms = AssemblyFileHelper.GetPropertiesSummary(getAllInputProps);
 var createOrUpdateInputColunms = AssemblyFileHelper.GetPropertiesSummary(createOrUpdateInputProps);
 
-var entityEnumsProps = AssemblyFileHelper.GetEnumProperties(entityColumns);
-var entityDateTimeProps = AssemblyFileHelper.GetDateTimeProperties(entityColumns);
+var entityEnumsProps = N.EntityEnumsProps;
+var entityDateTimeProps = N.EntityDateTimeProps;
 
 var excelControllerName = ModuleName +"/" + EntityName;
-var jsAppService = ToFirstLetterCamel(names.MgmtAppServiceName).Replace("AppService","");
+var jsAppService = ToFirstLetterCamel(N.MgmtAppServiceName).Replace("AppService","");
 %>
 <template>
     <div class="content">
@@ -83,9 +82,9 @@ var jsAppService = ToFirstLetterCamel(names.MgmtAppServiceName).Replace("AppServ
             </el-row>
         </el-form>
         <el-row class="division-border">
-            <el-button @click="createOrUpdateDialog.isShow = true" type="primary" v-permission:<%=names.VueWebPermissionPrefix %>-Create>新增</el-button>
-			<el-button @click="preEdit(appService.get)" v-permission:<%=names.VueWebPermissionPrefix %>-Edit>编辑</el-button>
-			<el-button @click="preBatchDelete(appService.delete)" type="danger" v-permission:<%=names.VueWebPermissionPrefix %>-Delete>删除</el-button>
+            <el-button @click="createOrUpdateDialog.isShow = true" type="primary" v-permission:<%=N.VueWebPermissionPrefix %>-Create>新增</el-button>
+			<el-button @click="preEdit(appService.get)" v-permission:<%=N.VueWebPermissionPrefix %>-Edit>编辑</el-button>
+			<el-button @click="preBatchDelete(appService.delete)" type="danger" v-permission:<%=N.VueWebPermissionPrefix %>-Delete>删除</el-button>
             <el-button @click="exportExcel">导出库存</el-button>
 			<el-button @click="downloadImporTemplate">下载模板</el-button>
 			<el-upload id="uploadExcel" style="margin-left:10px;display:inline" :headers="uploadFileSetting.headers" :action="uploadAction" :before-upload="beforeUploadFile" :on-success="onUploadFileSuccess" :on-error="onUploadFileError" :show-file-list="false" accept=".xlsx">

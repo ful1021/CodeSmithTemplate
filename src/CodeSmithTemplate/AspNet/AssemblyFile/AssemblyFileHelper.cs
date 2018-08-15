@@ -447,8 +447,6 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
         /// </summary>
         public static ClassNames GetAssemblyFileNames(string dllFolder, string nameSpaceName, string entityName, string permissionModuleName = "", string vueSpaWebPageName = "")
         {
-            var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
-
             var companyName = nameSpaceName.Split('.').FirstOrDefault();
             var projectTemplateName = nameSpaceName.Split('.').LastOrDefault();
 
@@ -460,10 +458,17 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
 
             Type assType = GetAssemblyType(coreDllFile, entityName);
 
-            var entityColumns = GetProperties(assType);
-            var dtoColumns = GetDtoProperties(entityColumns);
-            var getAllInputColumns = GetAllInputColumns(entityColumns);
+            var entityDirectoryName = assType.Namespace.Replace(companyName + "." + projectTemplateName, "").Replace(".", "\\");
+            var aplicationDirectoryPath = applicationAssemblyName + "\\" + entityDirectoryName;
+            var coreDirectoryPath = coreAssemblyName + "\\" + entityDirectoryName;
+
+            var entityProps = GetProperties(assType);
+            var dtoColumns = GetDtoProperties(entityProps);
+            var getAllInputColumns = GetAllInputColumns(entityProps);
             var entityDateTimeProps = GetDateTimeProperties(getAllInputColumns);
+            var entityEnumsProps = GetEnumProperties(entityProps);
+
+            var permissionPrefix = permissionModuleName + "_" + entityName + "Management";
 
             var pkName = "Id";
             return new ClassNames()
@@ -474,11 +479,13 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
                 EntityName = entityName,
                 EntityNamespace = assType.Namespace,
                 EntitySummary = GetClassSummary(assType),
-                EntityDirectoryName = assType.Namespace.Replace(companyName + "." + projectTemplateName, "").Replace(".", "\\"),
-                EntityColumns = entityColumns,
-                DtoColumns = dtoColumns,
-                GetAllInputColumns = getAllInputColumns,
+                ApplicationDirectoryPath = aplicationDirectoryPath,
+                CoreDirectoryPath = coreDirectoryPath,
+                EntityProps = entityProps,
+                DtoProps = dtoColumns,
+                GetAllInputProps = getAllInputColumns,
                 EntityDateTimeProps = entityDateTimeProps,
+                EntityEnumsProps = entityEnumsProps,
 
                 AppServiceName = entityName + "AppService",
                 MgmtAppServiceName = entityName + "MgmtAppService",
@@ -496,17 +503,18 @@ namespace CodeSmithTemplate.AspNet.AssemblyFile
 
                 CompanyName = companyName,
                 ProjectTemplateName = projectTemplateName,
-                PermissionModuleName = permissionModuleName,
 
                 ApplicationAssemblyName = applicationAssemblyName,
                 CoreAssemblyName = coreAssemblyName,
 
-                PermissionPrefix = permissionPrefix,
+                WebControllerName = entityName + "Controller",
+
                 VueWebPageName = string.IsNullOrWhiteSpace(vueSpaWebPageName) ? CommonCode.ToFirstLetterCamel(entityName) : vueSpaWebPageName,
 
-                VueWebPermissionPrefix = permissionModuleName + "-" + entityName + "Management",
-                WebControllerName = entityName + "Controller",
-                AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix
+                PermissionModuleName = permissionModuleName,
+                PermissionPrefix = permissionPrefix,
+                VueWebPermissionPrefix = permissionPrefix.Replace('_', '-'),
+                AppServicePermissionPrefix = permissionModuleName + "Permissions." + permissionPrefix,
             };
         }
     }

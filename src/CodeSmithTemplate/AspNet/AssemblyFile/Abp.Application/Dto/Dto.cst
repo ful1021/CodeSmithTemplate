@@ -27,7 +27,7 @@ namespace <%=N.EntityNamespace %>.Dto
     [AutoMap(typeof(<%=N.EntityName %>))]
     public class <%=N.DtoName %> : EntityDto<<%=N.PkType %>>
     {
-        <%foreach (var col in N.DtoColumns){%>
+        <%foreach (var col in N.DtoProps){%>
         /// <summary>
         /// <%=AssemblyFileHelper.GetPropertySummary(col) %>
         /// </summary>
