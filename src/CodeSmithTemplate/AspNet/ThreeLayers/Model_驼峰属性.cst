@@ -1,0 +1,29 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Register Template="Helper/BaseProperty.cst" Name="BaseProperty" MergeProperties="True" %> 
+<%@ Assembly Src="../Database/DatabaseHelper.cs" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.Database" %>
+<script runat="template">
+DatabaseHelper db = new DatabaseHelper();
+</script>
+using System;
+
+namespace <%=ModelNameSpace %>
+{
+    /// <summary>
+    /// <%=Table.Description %>
+    /// </summary>
+    public partial class <%=ToPascal(Table.Name) %>
+    {
+        <%foreach(var column in Table.Columns) {%>
+        /// <summary>
+        /// <%=column.Description %>
+        /// </summary>
+        public <%=db.GetCSharpNullableTypeByDb(column) %> <%=ToPascal(column.Name) %> { get; set; }
+        
+        <%}%>
+    }
+}

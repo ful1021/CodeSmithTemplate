@@ -422,7 +422,8 @@ namespace CodeSmithTemplate
             var result = defaultResult;
             if (str != null && !string.IsNullOrWhiteSpace(str.ToString()))
             {
-                if (int.TryParse(str.ToString(), out int tmp))
+                int tmp;
+                if (int.TryParse(str.ToString(), out tmp))
                 {
                     result = tmp;
                 }

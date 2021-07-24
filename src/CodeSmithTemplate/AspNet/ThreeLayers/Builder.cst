@@ -1,0 +1,24 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmithTemplate.CommonCode" Encoding="utf-8" %>
+<%@ Register Template="Helper/BaseProperty.cst" Name="BaseProperty" MergeProperties="True" %> 
+<%@ Register Template="Helper/GenerateLayerProperty.cst" Name="GenerateLayerProperty" MergeProperties="True" %> 
+<%@ Assembly Src="../Database/DatabaseHelper.cs" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Import Namespace="CodeSmithTemplate" %>
+<%@ Import Namespace="CodeSmithTemplate.AspNet.Database" %>
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.IO" %>
+<%
+// 设定输出文件的顶级根目录
+if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
+
+{
+    var directory = OutputDirectory + "\\";    
+    RenderToFile(Model, "Model_驼峰属性.cst", directory, ToPascal(Table.Name) + ".cs");
+}
+//指定使用资源管理器打开文件夹
+//System.Diagnostics.Process.Start("Explorer.exe", OutputDirectory);
+//System.AppDomain.Unload(System.AppDomain.CurrentDomain);
+%>

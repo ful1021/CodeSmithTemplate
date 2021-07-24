@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CodeSmithTemplate</RootNamespace>
     <AssemblyName>CodeSmithTemplate</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -113,6 +113,11 @@
     <None Include="AspNet\AssemblyFile\Helper\AssemblyFileProperty.cst" />
     <None Include="AspNet\AssemblyFile\Helper\GenerateConfigProperty.cst" />
     <None Include="AspNet\AssemblyFile\Helper\GenerateLayerProperty.cst" />
+    <None Include="AspNet\ThreeLayers\Builder.cst" />
+    <None Include="AspNet\ThreeLayers\Helper\BaseProperty.cst" />
+    <None Include="AspNet\ThreeLayers\Helper\GenerateLayerProperty.cst" />
+    <None Include="AspNet\ThreeLayers\Model_驼峰属性.cst" />
+    <None Include="AspNet\ThreeLayers\Model_默认.cst" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
