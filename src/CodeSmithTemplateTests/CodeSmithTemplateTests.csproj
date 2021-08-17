@@ -93,7 +93,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="AspNet\Database\DatabaseHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
