@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSmithTemplate", "src\CodeSmithTemplate\CodeSmithTemplate.csproj", "{0FDAA6F2-02C5-4CB8-A20C-0D197FD34C6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbpRadTool", "src\AbpRadTool\AbpRadTool.csproj", "{0D6E8BE3-4F4C-46CA-8531-38E218630D77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSmithTemplateTests", "src\CodeSmithTemplateTests\CodeSmithTemplateTests.csproj", "{A2003632-2117-4DCD-A584-03C40D6F9569}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSmithJst", "src\CodeSmithJst\CodeSmithJst.csproj", "{1FD28270-531D-43EE-A186-FA09373875CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{0D6E8BE3-4F4C-46CA-8531-38E218630D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D6E8BE3-4F4C-46CA-8531-38E218630D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D6E8BE3-4F4C-46CA-8531-38E218630D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2003632-2117-4DCD-A584-03C40D6F9569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2003632-2117-4DCD-A584-03C40D6F9569}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2003632-2117-4DCD-A584-03C40D6F9569}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2003632-2117-4DCD-A584-03C40D6F9569}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FD28270-531D-43EE-A186-FA09373875CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD28270-531D-43EE-A186-FA09373875CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD28270-531D-43EE-A186-FA09373875CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD28270-531D-43EE-A186-FA09373875CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

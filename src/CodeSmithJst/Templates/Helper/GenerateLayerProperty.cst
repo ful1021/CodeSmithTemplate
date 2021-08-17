@@ -1,0 +1,7 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../../CommonCode.cs" Inherits="CodeSmithJst.CommonCode" Encoding="utf-8" %>
+
+<%@ Property Name="Model" Type="System.Boolean" Category="04.代码生成层" Description="生成Model" 
+Default="false"%>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>

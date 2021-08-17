@@ -1,0 +1,61 @@
+﻿<%@ Template Language="C#" TargetLanguage="C#" Src="../CommonCode.cs" Inherits="CodeSmithJst.CommonCode" Encoding="utf-8" %>
+<%@ Register Template="Helper/BaseProperty.cst" Name="BaseProperty" MergeProperties="True" %> 
+<%@ Assembly Src="../DatabaseHelper.cs" %>
+<%@ Assembly Src="../JstName.cs" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="CodeSmithJst" %>
+<%
+DatabaseHelper db = new DatabaseHelper();
+JstName N = JstName.Init(this);
+%>
+using System;
+using CS.Model;
+using Jst.Standard.Data.Attributes;
+using S3.Common.CustomerAttribute;
+using RequiredAttribute = S3.Common.CustomerAttribute.RequiredAttribute;
+
+namespace <%=ModelNameSpace %>
+{
+    /// <summary>
+    /// <%=Table.Description %>
+    /// </summary>
+   [Serializable]
+    public class <%=N.ModelName %> : ModelData<<%=N.ModelName %>>
+    {
+        #region IDbContactor
+        public override string GetDbName() => Common.UtilityBase.OrderConnectionName;
+        public override string GetRawDbName() => "<%=N.RawDbName %>";
+        public override string GetRawTableName() => "<%=N.RawTableName %>";
+        public override string GetCacheRegion() => "<%=N.CacheRegion %>";
+        public override bool IsSplitDb() => <%=N.IsSplitDb %>;
+        public override bool IsSplitTable() => <%=N.IsSplitTable %>;
+        public override string GetUniqueKey() => "<%=db.GetPKName(Table) %>";
+        public override string GetIdentityKey() => "<%=db.GetPKName(Table) %>";
+        public override string[] GetFields() => new[] { "<%=string.Join("\", \"",Table.Columns.Select(c=>c.Name)) %>" };
+    
+        #endregion
+
+        #region Fields
+        <%foreach(ColumnSchema col in Table.Columns) {%>
+        /// <summary>
+        /// <%=col.Description %>
+        /// </summary><% if (!col.AllowDBNull) {%>
+        [Required]<%} if (db.GetCSharpNullableTypeByDb(col) == "string" && col.Size != -1) {%>
+        [MaxLength(<%=col.Size %>)]<%} %>
+        [Column("<%=col.Name %>")]
+        public <%=db.GetCSharpNullableTypeByDb(col) %> <%=ToPascal(col.Name) %> { get; set; }
+        
+        <%}%>
+        #endregion
+        
+        public void SetValues()
+        {
+        <%foreach(var col in Table.Columns) {%>
+            SetValue("<%=col.Name %>", <%=ToPascal(col.Name) %>);
+        <%}%>
+        }
+    }
+}
